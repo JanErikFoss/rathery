@@ -4,7 +4,7 @@ import { StyleSheet, View, ListView, Text, Dimensions, Keyboard, Platform } from
 import ChatItem from "./ChatItem";
 import ChatHeader from "./ChatHeader"
 
-import { GiftedChat, Actions } from '../forked-repos/react-native-gifted-chat';
+import { GiftedChat, Actions } from '../modified-repos/gifted-chat';
 
 export default class Chat extends Component {
   constructor(props) {
