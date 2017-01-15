@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Dimensions, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import GameButton from "./GameButton"
 import MiddleInfo from "./MiddleInfo"
@@ -24,6 +24,7 @@ export default class Game extends Component {
       if(!user) return console.log("Game.js: Failed to initialize game, user is null");
 
       this.setState({uid: user.uid});
+      this.uid = user.uid;
 
       const mainRef = this.props.db.ref("rooms/main");
       mainRef.child("ops").on("value", ss=> this.onOptionValue({ss: ss}));
@@ -90,12 +91,45 @@ export default class Game extends Component {
     if(this.state.voted) return console.log("Already voted");
     console.log("Voting " + op + " with votes: " + votes);
 
-    this.props.db.ref("votes/main/"+this.state.uid).set(op);
+    const  numRef = this.props.db.ref("rooms/main/"+op+"votes");
+
+    this.saveVoteRecord({op})
+    .then( () => numRef.transaction(votes=> votes ? ++votes : 1) )
+    .then( () => console.log("Successfully voted") )
+    .catch( this.voteError.bind(this) );
 
     this.setState({
       voted: true,
       chosen: op
     });
+  }
+
+  saveVoteRecord({op}){
+    return new Promise( (resolve, reject) =>{
+      const ref = this.props.db.ref("votes/main/"+this.uid);
+      const vote = {
+        timestamp: this.props.firebase.database.ServerValue.TIMESTAMP,
+        op: op
+      };
+
+      console.log("vote: ", vote);
+
+      ref.set(vote)
+      .then( resolve )
+      .catch(err =>{
+        console.log("Failed to save vote record to firebase. Has the user already voted?");
+        reject("already voted");
+      });
+    });
+  }
+
+  voteError(err){
+      console.log("Failed to vote: ", err)
+
+      const mes = err==="already voted" ? "You have already voted" : "Please try again";
+      Alert.alert("Failed to vote", mes, [{text: 'OK'}]);
+
+      this.setState({voted: false});
   }
 
 }

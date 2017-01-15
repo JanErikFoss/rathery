@@ -116,12 +116,19 @@ export default class LadderList extends Component {
     if(rowData.voted) return console.log("Already voted");
     console.log("Voting for id " + rowData.id);
     this.changeRow(rowData, {voted: true});
-    this.props.db.ref("laddervotes/main/"+rowData.id+"/"+this.uid).set( true )
-    .then( () => console.log("Vote saved") )
+
+    const voteRef = this.props.db.ref("laddervotes/main/"+rowData.id+"/"+this.uid);
+    const laddRef = this.props.db.ref("ladders/main/"+rowData.id+"/votes");
+
+    voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
+    .then( () => console.log("Vote record saved") )
+    .then( () => laddRef.transaction(votes=> votes ? ++votes : 1) )
+    .then( () => console.log("Successfully completed laddervote action") )
     .catch(err=>{
       console.log("Failed to vote: ", err);
       this.changeRow(rowData, {voted: false});
     });
+
   }
 
   componentWillUnmount(){
@@ -160,7 +167,7 @@ export default class LadderList extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
 
 });

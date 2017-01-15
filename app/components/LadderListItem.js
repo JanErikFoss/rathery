@@ -26,9 +26,8 @@ export default class LadderList extends Component {
 
         <View style={styles.opContainer}>
 
-          <Text style={[styles.op, styles.static, styles.head]}>Would you rather</Text>
           <Text style={[styles.op, styles.op1]}>{this.props.data.op1 || "Invalid option"}</Text>
-          <Text style={[styles.op, styles.static, styles.middle]}>or would you</Text>
+          <Text style={[styles.op, styles.static, styles.middle]}>or</Text>
           <Text style={[styles.op, styles.op2]}>{this.props.data.op2 || "Invalid option"}</Text>
 
         </View>
@@ -71,10 +70,12 @@ const styles = StyleSheet.create({
   opContainer: {
     width: Dimensions.get('window').width,
     backgroundColor: "#22313F",
+    //backgroundColor: "white",
+    paddingVertical: 20,
   },
 
   op: {
-    color: "silver",
+    color: "white",
     padding: 5,
     paddingRight: imageSize + 2*imagePadding,
   },
