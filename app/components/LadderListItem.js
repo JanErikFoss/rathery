@@ -26,9 +26,9 @@ export default class LadderList extends Component {
 
         <View style={styles.opContainer}>
 
-          <Text style={[styles.op, styles.op1]}>{this.props.data.op1 || "Invalid option"}</Text>
-          <Text style={[styles.op, styles.static, styles.middle]}>or</Text>
-          <Text style={[styles.op, styles.op2]}>{this.props.data.op2 || "Invalid option"}</Text>
+          <Text style={[styles.text, styles.op, styles.op1]}>{this.props.data.op1 || "Invalid option"}</Text>
+          <Text style={[styles.text, styles.op, styles.static, styles.middle]}>Posted by Lille-Kristoffer</Text>
+          <Text style={[styles.text, styles.op, styles.op2]}>{this.props.data.op2 || "Invalid option"}</Text>
 
         </View>
 
@@ -37,9 +37,9 @@ export default class LadderList extends Component {
           <View style={styles.buttonInnerContainer}>
             <Image style={styles.image} 
               source={ this.props.data.voted 
-                          ? require("../images/upvoted_outlined.png")
-                          : require("../images/upvote_outlined.png") } />
-            <Text style={styles.votesText}>
+                          ? require("../images/upvoted.png")
+                          : require("../images/upvote.png") } />
+            <Text style={[styles.text, styles.votesText]}>
               {this.props.data.votes || 0}
             </Text>
           </View>
@@ -60,23 +60,31 @@ export default class LadderList extends Component {
 const imageSize = Dimensions.get('window').width * 0.12;
 const imagePadding = 5;
 
+const opContainerHorizontalMargin = 0;
+
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 12,
+    paddingBottom: 15,
     flexDirection: "row",
   },
 
   opContainer: {
-    width: Dimensions.get('window').width,
-    backgroundColor: "#22313F",
-    //backgroundColor: "white",
+    width: Dimensions.get('window').width - opContainerHorizontalMargin * 2,
+    backgroundColor: "white",
+    borderRadius: 10,
     paddingVertical: 20,
+    marginHorizontal: opContainerHorizontalMargin
+  },
+
+  text: {
+    color: "black",
+    fontWeight: "normal"
   },
 
   op: {
-    color: "white",
-    padding: 5,
+    padding: 15,
     paddingRight: imageSize + 2*imagePadding,
+    fontSize: 17,
   },
   op1: {
   },
@@ -84,9 +92,11 @@ const styles = StyleSheet.create({
   },
 
   static: {
-    color: "white",
     textAlign: "center",
-    fontWeight: "bold"
+    fontWeight: "200"
+  },
+  middle: {
+    color: "silver"
   },
 
   highlight: {
@@ -103,8 +113,8 @@ const styles = StyleSheet.create({
     height: imageSize,
   },
   votesText: {
-    color: "white",
-    textAlign: "center"
+    fontSize: 20,
+    textAlign: "center",
   }
 
 });

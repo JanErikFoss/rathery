@@ -5,6 +5,14 @@ import EndButtons from "./EndButtons"
 import LadderList from "./LadderList"
 
 export default class Ladder extends Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      ladderState: this.props.ladderState || 0,
+    };
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -12,14 +20,23 @@ export default class Ladder extends Component {
         <EndButtons top={true}
           leftImage={"back"}
           leftOnPress={this.props.onFinished}
-          middleText={"Ladder"}
-          rightImage={"new"}
-          leftOnPess={this.props.onNewPressed} />
+          middleText={this.state.ladderState === 0 ? "Best questions" : "New questions"}
+          rightImage={this.state.ladderState === 0 ? "new" : "best"}
+          rightOnPress={this.onNewPressed.bind(this)} />
 
         <View style={styles.listContainer} >
-          <LadderList {...this.props} 
-            loadMax={20}
-            room={"main"} />
+
+          {this.state.ladderState === 0 &&
+            <LadderList {...this.props} 
+              loadMax={50}
+              room={"main"} />
+          }
+          {this.state.ladderState === 1 &&
+            <LadderList {...this.props} 
+              loadMax={50}
+              room={"main"}
+              new={true} />
+          }
         </View>
 
       </View>
@@ -27,7 +44,11 @@ export default class Ladder extends Component {
   }
 
   onNewPressed(){
-    console.log("New pressed");
+    console.log("Changing ladderState");
+
+    this.setState({
+      ladderState: 1 - this.state.ladderState
+    });
   }
 
 }

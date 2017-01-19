@@ -4,7 +4,7 @@ import { StyleSheet, View, ListView, Text } from 'react-native';
 import LadderListLoader from "./LadderListLoader"
 import LadderListItem from "./LadderListItem"
 
-export default class LadderList extends Component {
+export default class LadderListTop extends Component {
   constructor(props) {
     super(props);
 
@@ -20,18 +20,18 @@ export default class LadderList extends Component {
   }
 
   componentDidMount(){
-    this.value_count = 0;
-
     this.props.firebase.auth().onAuthStateChanged( user=> {
       if(!user) return console.log("LadderList.js: Failed to initialize ladder, user is null");
 
       this.uid = user.uid;
 
-      const query = this.props.db.ref("ladders/"+this.props.room).orderByChild("votes").limitToLast(this.state.loadMax);
+      const ref = this.props.db.ref("ladders/"+this.props.room);
+      const query = this.props.new
+        ? ref.orderByChild("createdAt").limitToLast(this.state.loadMax)
+        : ref.orderByChild("votes").limitToLast(this.state.loadMax);
 
       this.listener = query.on("child_added", ss=>{
-        let listener = ss.ref.on("value", 
-          ss => this._onChildAdded({listener, ss}), 
+        let listener = ss.ref.on("value", ss => this._onChildAdded({listener, ss}),
           err=> console.log("Failed to listen for value in LadderList.js: ", err) );
       }, err=> console.log("Failed to listen for child_added in LadderList.js: ", err) );
 
@@ -49,7 +49,7 @@ export default class LadderList extends Component {
     //If new data is null, remove row if it already exists then return
     if(!ss.exists()){
       row.removeListener();
-      this.rows = this.rows.filter( r => r.id !== row.id );
+      this.rows = this.rows.filter( r=> r.id !== row.id );
       this.setState(prev =>{
         return {ds: prev.ds.cloneWithRows( this.rows ) }
       });
@@ -64,7 +64,8 @@ export default class LadderList extends Component {
     this.rows = this.rows.filter( r => r.id !== row.id );
 
     //Insert new row
-    const index = this.rows.findIndex( r=> r.votes < row.votes || r.id === row.id);
+    const sortBy = this.props.new ? "createdAt" : "votes";
+    const index = this.rows.findIndex( r=> r[sortBy] < row[sortBy])
     index === -1 ? this.rows.push(row) : this.rows.splice(index, 0, row);
 
     //Get the overflowing rows
@@ -166,7 +167,8 @@ export default class LadderList extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: "#34495e",
   },
 
 });

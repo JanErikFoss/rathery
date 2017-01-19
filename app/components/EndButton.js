@@ -27,6 +27,10 @@ export default class BottomButtons extends Component {
         return <Image source={require("../images/back.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
       case "back_outlined": 
         return <Image source={require("../images/back_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
+      case "upvote": 
+        return <Image source={require("../images/upvote.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
+      case "upvoted": 
+        return <Image source={require("../images/upvoted.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
       case "write": 
         return <Image source={require("../images/write.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
       case "cash": 
@@ -35,16 +39,8 @@ export default class BottomButtons extends Component {
         return <Image source={require("../images/ladder.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
       case "new": 
         return <Image source={require("../images/new.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "upvote_outlined": 
-        return <Image source={require("../images/upvote_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "downvote_outlined": 
-        return <Image source={require("../images/downvote_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "upvoted_outlined": 
-        return <Image source={require("../images/upvoted_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "downvoted_outlined": 
-        return <Image source={require("../images/downvoted_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "forward_outlined": 
-        return <Image source={require("../images/forward_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
+      case "best": 
+        return <Image source={require("../images/best.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
       case "forward": 
         return <Image source={require("../images/forward.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
       case "home": 
