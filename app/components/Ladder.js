@@ -18,7 +18,8 @@ export default class Ladder extends Component {
 
         <View style={styles.listContainer} >
           <LadderList {...this.props} 
-            loadMax={20} />
+            loadMax={20}
+            room={"main"} />
         </View>
 
       </View>

@@ -14,6 +14,7 @@ export default class Game extends Component {
       op1votes: 0,
       op2votes: 0,
       voted: false,
+      room: "main",
     };
   }
 
@@ -26,20 +27,18 @@ export default class Game extends Component {
       this.setState({uid: user.uid});
       this.uid = user.uid;
 
-      const mainRef = this.props.db.ref("rooms/main");
-      mainRef.child("ops").on("value", ss=> this.onOptionValue({ss: ss}));
-      mainRef.child("op1votes").on("value", ss=> this.onVoteValue({ss: ss, name: "op1votes"}));
-      mainRef.child("op2votes").on("value", ss=> this.onVoteValue({ss: ss, name: "op2votes"}));
+      const roomRef = this.props.db.ref("rooms/"+this.state.room);
+      roomRef.child("ops").on("value", ss=> this.onOptionValue({ss: ss}));
+      roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
+      roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
 
-      this.props.db.ref("users/"+user.uid+"/score").on("value", ss=> {
-        this.props.onScoreChanged(ss.val());
-      });
+      const scoreRef = this.props.db.ref("users/"+user.uid+"/score");
+      scoreRef.on("value", ss=> this.props.onScoreChanged(ss.val()) );
     });
   }
 
   onOptionValue({ss}){
     const val = ss.val();
-    //console.log("Val: ", val);
 
     this.setState({
       voted: false,
@@ -47,11 +46,6 @@ export default class Game extends Component {
       op1: val.op1 || "This is undefined",
       op2: val.op2 || "This is undefined",
     });
-  }
-
-  onVoteValue({ss, name}){
-    //console.log(name + ": " + ss.val());
-    this.setState({[name]: ss.val()});
   }
 
   render() {
@@ -91,7 +85,7 @@ export default class Game extends Component {
     if(this.state.voted) return console.log("Already voted");
     console.log("Voting " + op + " with votes: " + votes);
 
-    const  numRef = this.props.db.ref("rooms/main/"+op+"votes");
+    const  numRef = this.props.db.ref("rooms/"+this.state.room+"/"+op+"votes");
 
     this.saveVoteRecord({op})
     .then( () => numRef.transaction(votes=> votes ? ++votes : 1) )
@@ -105,15 +99,13 @@ export default class Game extends Component {
   }
 
   saveVoteRecord({op}){
+    const ref = this.props.db.ref("votes/"+this.state.room+"/"+this.uid);
+    const vote = {
+      timestamp: this.props.firebase.database.ServerValue.TIMESTAMP,
+      op: op
+    };
+
     return new Promise( (resolve, reject) =>{
-      const ref = this.props.db.ref("votes/main/"+this.uid);
-      const vote = {
-        timestamp: this.props.firebase.database.ServerValue.TIMESTAMP,
-        op: op
-      };
-
-      console.log("vote: ", vote);
-
       ref.set(vote)
       .then( resolve )
       .catch(err =>{
@@ -126,9 +118,13 @@ export default class Game extends Component {
   voteError(err){
       console.log("Failed to vote: ", err)
 
-      const mes = err==="already voted" ? "You have already voted" : "Please try again";
-      Alert.alert("Failed to vote", mes, [{text: 'OK'}]);
+      if(err === "already voted"){
+        Alert.alert("Failed to vote", "You have already voted", [{text: 'OK'}]);
+        this.setState({voted: true});
+        return;
+      }
 
+      Alert.alert("Failed to vote", "Please try again", [{text: 'OK'}]);
       this.setState({voted: false});
   }
 

@@ -8,10 +8,12 @@ export default class LadderList extends Component {
   constructor(props) {
     super(props);
 
-    this.rows = [{loading: true, op1: "Loading...", op2: "Loading..."}];
+    this.rows = [];
+    const startingRows = [{loading: true, op1: "Loading...", op2: "Loading..."}];
+
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      ds: ds.cloneWithRows(this.rows),
+      ds: ds.cloneWithRows(startingRows),
       loadMax: props.loadMax || 20,
     };
 
@@ -25,8 +27,8 @@ export default class LadderList extends Component {
 
       this.uid = user.uid;
 
-      this.ref = this.props.db.ref("ladders/main");
-      const query = this.ref.orderByChild("votes").limitToLast(this.state.loadMax);
+      const query = this.props.db.ref("ladders/"+this.props.room).orderByChild("votes").limitToLast(this.state.loadMax);
+
       this.listener = query.on("child_added", ss=>{
         let listener = ss.ref.on("value", 
           ss => this._onChildAdded({listener, ss}), 
@@ -38,58 +40,52 @@ export default class LadderList extends Component {
 
   _onChildAdded({listener, ss}){
     if(this.unmounted) return console.log("Unmounted, disregarding child_added in LadderList.js");
-    let row = ss.val();
-    if(!row){
-      ss.ref.off("value", listener);
-      this.rows = this.rows.filter( r => r.id !== ss.key );
+    let row = ss.val() || {};
+
+    row.id = ss.key;
+    row.votes = row.votes || 0;
+    row.removeListener = ()=> ss.ref.off("value", listener);
+
+    //If new data is null, remove row if it already exists then return
+    if(!ss.exists()){
+      row.removeListener();
+      this.rows = this.rows.filter( r => r.id !== row.id );
       this.setState(prev =>{
         return {ds: prev.ds.cloneWithRows( this.rows ) }
       });
       return;
     }
 
-    row.id = ss.key;
-    row.votes = row.votes || 0;
-    row.removeListener = ()=> ss.ref.off("value", listener);
+    //Check if user has voted and assign voted=true if true
+    const old = this.rows.find( r=> r.id === row.id );
+    old && old.voted && ( row = Object.assign({}, row, {voted: true}) )
 
-    //console.log("Top question changed: ", row);
+    //Remove old row
+    this.rows = this.rows.filter( r => r.id !== row.id );
 
-    this._votedFor(row) 
-      ? row = Object.assign({}, row, {voted: true} )
-      : this.loadVotedFor(row);
+    //Insert new row
+    const index = this.rows.findIndex( r=> r.votes < row.votes || r.id === row.id);
+    index === -1 ? this.rows.push(row) : this.rows.splice(index, 0, row);
 
-    this.rows = this.rows.filter( r => r.id !== row.id && !r.loading );
-
-    this._insertRow(row);
-
+    //Get the overflowing rows
     const overflowRows = this.rows.slice(this.state.loadMax);
+    //Get the new rows array
     this.rows = this.rows.slice(0, this.state.loadMax);
-      
+
     this.setState(prev =>{
+      //Update listview with new row
       return {ds: prev.ds.cloneWithRows( this.rows ) }
+    }, ()=>{ //Callback
+      //Load vote if not explicitly set to true
+      !row.voted && this.loadVotedFor( row )
     });
 
-    overflowRows.forEach( row => row.removeListener() );
-  }
-
-  _votedFor(row){
-    let votedFor = false;
-    this.rows.forEach( r => votedFor = (r.id === row.id) ? r.voted : votedFor );
-    return votedFor;
-  }
-
-  _insertRow(row){
-    this.rows = [...this.rows];
-
-    for(let i = 0; i < this.rows.length; ++i)
-      if(row.votes >= this.rows[i].votes)
-        return this.rows.splice(i, 0, row);
-
-    this.rows.push(row);
+    //Remove listener on the overflowing rows
+    overflowRows.forEach( r=> r.removeListener() );
   }
 
   loadVotedFor(row){
-    const ref = this.props.db.ref("laddervotes/main/"+row.id+"/"+this.uid);
+    const ref = this.props.db.ref("laddervotes/"+this.props.room+"/"+row.id+"/"+this.uid);
     ref.once("value", 
       ss => ss.exists() && this.changeRow(row, {voted: true}), 
       err=> console.log("Failed to load vote for ladder question: ", err));
@@ -101,10 +97,13 @@ export default class LadderList extends Component {
     Object.keys(newProps).forEach( key => changed = changed || newProps[key] !== row[key] );
     if(!changed) return console.log("changeRow called with no changes to be done"); */
 
-    const newRow = Object.assign({}, row, newProps);      //Copy newRow and set the "voted" property to true
-    this.rows = [...this.rows];                           //Create a copy of rows
+    //Copy newRow and set the new properties
+    const newRow = Object.assign({}, row, newProps);
+    //Create a copy of rows
+    this.rows = [...this.rows];
 
-    this.rows[this.rows.indexOf(row)] = newRow;           //Replace old row with new row in newRows array
+    //Replace old row with new row in newRows array
+    this.rows[this.rows.indexOf(row)] = newRow;
 
     this.setState(prevState => {
       return {ds: prevState.ds.cloneWithRows(this.rows) } //Set listview data to newRows
@@ -117,8 +116,8 @@ export default class LadderList extends Component {
     console.log("Voting for id " + rowData.id);
     this.changeRow(rowData, {voted: true});
 
-    const voteRef = this.props.db.ref("laddervotes/main/"+rowData.id+"/"+this.uid);
-    const laddRef = this.props.db.ref("ladders/main/"+rowData.id+"/votes");
+    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+rowData.id+"/"+this.uid);
+    const laddRef = this.props.db.ref("ladders/"+this.props.room+"/"+rowData.id+"/votes");
 
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
     .then( () => console.log("Vote record saved") )

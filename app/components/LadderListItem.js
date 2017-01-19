@@ -62,8 +62,7 @@ const imagePadding = 5;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
-    paddingBottom: 0,
+    paddingBottom: 12,
     flexDirection: "row",
   },
 
