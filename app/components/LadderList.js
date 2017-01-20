@@ -94,9 +94,6 @@ export default class LadderListTop extends Component {
 
   changeRow(row, newProps){
     if(this.unmounted) return console.log("Unmounted, disregarding changeRow call in LadderList.js");
-    /*let changed = false;
-    Object.keys(newProps).forEach( key => changed = changed || newProps[key] !== row[key] );
-    if(!changed) return console.log("changeRow called with no changes to be done"); */
 
     //Copy newRow and set the new properties
     const newRow = Object.assign({}, row, newProps);
@@ -106,8 +103,9 @@ export default class LadderListTop extends Component {
     //Replace old row with new row in newRows array
     this.rows[this.rows.indexOf(row)] = newRow;
 
+    //Set listview data to newRows
     this.setState(prevState => {
-      return {ds: prevState.ds.cloneWithRows(this.rows) } //Set listview data to newRows
+      return {ds: prevState.ds.cloneWithRows(this.rows) }
     });
   }
 

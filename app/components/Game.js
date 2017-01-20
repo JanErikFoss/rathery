@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Dimensions, Keyboard, TouchableWithoutFeedback,
 
 import GameButton from "./GameButton"
 import MiddleInfo from "./MiddleInfo"
+import CountdownBar from "./CountdownBar"
 
 export default class Game extends Component {
   constructor(){
@@ -14,11 +15,14 @@ export default class Game extends Component {
       op1votes: 0,
       op2votes: 0,
       voted: false,
+      active: true,
+      tstamp: 0,
       room: "main",
     };
   }
 
   componentWillMount(){
+    this.time = Date.now();
     console.log("Game component will mount");
     
     this.props.firebase.auth().onAuthStateChanged( user=> {
@@ -27,18 +31,26 @@ export default class Game extends Component {
       this.setState({uid: user.uid});
       this.uid = user.uid;
 
-      const roomRef = this.props.db.ref("rooms/"+this.state.room);
-      roomRef.child("ops").on("value", ss=> this.onOptionValue({ss: ss}));
-      roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
-      roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
+      this.roomRef = this.props.db.ref("rooms/"+this.state.room);
+      this.roomRef.child("ops").on("value", ss=> this.onOptionValue(ss.val()));
+      this.roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
+      this.roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
+      this.roomRef.child("timestamp").on("value", ss=> this.setState({tstamp: ss.val()}) );
+      this.roomRef.child("active").on("value", ss=> this.setState({active: ss.val()}) );
 
-      const scoreRef = this.props.db.ref("users/"+user.uid+"/score");
-      scoreRef.on("value", ss=> this.props.onScoreChanged(ss.val()) );
+      this.scoreRef = this.props.db.ref("users/"+user.uid+"/score");
+      this.scoreRef.on("value", ss=> this.props.onScoreChanged(ss.val()) );
     });
   }
 
-  onOptionValue({ss}){
-    const val = ss.val();
+  componentWillUnmount(){
+    //Both of these are untested, so they might not even work
+    this.roomRef && this.roomRef.off();
+    this.scoreRef && this.scoreRef.off();
+  }
+
+  onOptionValue(val){
+    val = val || {};
 
     this.setState({
       voted: false,
@@ -49,13 +61,14 @@ export default class Game extends Component {
   }
 
   render() {
+    console.log("Timestamp: ", this.state.tstamp);
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
         <View style={styles.container}>
           <GameButton
             option={this.state.op1} 
             votes={this.state.op1votes} 
-            totalVotes={this.state.op1votes + this.state.op2votes} 
+            percentage={this.getPercentage(this.state.op1votes)}
             voted={this.state.voted}
             chosen={this.state.chosen === "op1"}
             onPress={()=> this.vote("op1", this.state.op1votes)} 
@@ -63,12 +76,12 @@ export default class Game extends Component {
             underlayColor={"#c0392b"}
             maxCharsAfterVoting={100} />
 
-          <MiddleInfo />
+          <CountdownBar timestamp={this.state.tstamp || 0}/>
 
           <GameButton 
               option={this.state.op2} 
               votes={this.state.op2votes} 
-              totalVotes={this.state.op1votes + this.state.op2votes} 
+              percentage={this.getPercentage(this.state.op2votes)}
               voted={this.state.voted} 
               chosen={this.state.chosen === "op2"}
               onPress={()=> this.vote("op2", this.state.op2votes)}
@@ -79,6 +92,10 @@ export default class Game extends Component {
         </View>
       </TouchableWithoutFeedback>
     );
+  }
+
+  getPercentage(votes){
+    return Math.round( (votes / (this.state.op1votes+this.state.op2votes) ) *100);
   }
 
   vote(op, votes){

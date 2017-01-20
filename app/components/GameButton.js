@@ -13,7 +13,7 @@ export default class Game extends Component {
             {this.props.voted && 
               <View style={styles.infoTextContainer} >
                 <Text style={[styles.text, styles.infoText, styles.votesText]}>{this.props.votes}</Text>
-                <Text style={[styles.text, styles.infoText, styles.percentageText]}>{this.getPercentage()}%</Text>
+                <Text style={[styles.text, styles.infoText, styles.percentageText]}>{this.props.percentage}%</Text>
               </View>
             }
             {this.props.voted && this.props.chosen &&
@@ -24,11 +24,6 @@ export default class Game extends Component {
         </TouchableHighlight>
       </View>
     );
-  }
-
-  getPercentage(){
-    if(!this.props.votes || !this.props.totalVotes) return 0;
-    return Math.round( (this.props.votes / this.props.totalVotes) *100);
   }
 
   getShortOption(){
