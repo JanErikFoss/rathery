@@ -4,7 +4,9 @@ import { StyleSheet, View, TouchableHighlight, Image, Text } from 'react-native'
 export default class BottomButtons extends Component {
   render() {
     return (
-        <TouchableHighlight onPress={this.props.onPress} style={[styles.button, this.props.top ? styles.topButton : styles.botButton, {alignItems: this.props.middle ? "center" : (this.props.right? "flex-end":"flex-start")}]} underlayColor={"transparent"} >
+        <TouchableHighlight underlayColor={"transparent"}
+            style={this.getTouchableStyle()} 
+            onPress={this.props.onPress} >
           <View style={styles.innerContainer}>
             
             { this.props.image &&
@@ -21,38 +23,36 @@ export default class BottomButtons extends Component {
     );
   }
 
+  getTouchableStyle(){
+    const posStyle = this.props.top ? styles.topButton : styles.botButton;
+    const alignItems = {alignItems: this.getAlignItems()};
+    return [styles.button, posStyle, alignItems];
+  }
+  getAlignItems(){
+    if(this.props.middle) return "center";
+    return this.props.right ? "flex-end" : "flex-start"
+  }
+
   getImage(src, top, style){
+    const imageStyle = [top ? styles.topImage : styles.bottomImage, style]; //Image style
+    const image = source=> (<Image style={imageStyle} source={source} resizeMode={Image.resizeMode.contain} />);
+
     switch(src){
-      case "back": 
-        return <Image source={require("../../images/back.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "back_outlined": 
-        return <Image source={require("../../images/back_outlined.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "upvote": 
-        return <Image source={require("../../images/upvote.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "upvoted": 
-        return <Image source={require("../../images/upvoted.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "write": 
-        return <Image source={require("../../images/write.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "cash": 
-        return <Image source={require("../../images/cash.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "ladder": 
-        return <Image source={require("../../images/ladder.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "new": 
-        return <Image source={require("../../images/new.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "best": 
-        return <Image source={require("../../images/best.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "forward": 
-        return <Image source={require("../../images/forward.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "home": 
-        return <Image source={require("../../images/home.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "double_arrow": 
-        return <Image source={require("../../images/double_arrow.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      case "remove": 
-        return <Image source={require("../../images/remove.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
-      default:
-        return <Image source={require("../../images/transparent.png")} resizeMode={Image.resizeMode.contain} style={[top ? styles.topImage : styles.bottomImage, style]} />
+      case "back":    return image(require("../../images/back.png"));
+      case "upvote":  return image(require("../../images/upvote.png"));
+      case "upvoted": return image(require("../../images/upvoted.png"));
+      case "write":   return image(require("../../images/write.png"));
+      case "cash":    return image(require("../../images/cash.png"));
+      case "ladder":  return image(require("../../images/ladder.png"));
+      case "new":     return image(require("../../images/new.png"));
+      case "best":    return image(require("../../images/best.png"));
+      case "forward": return image(require("../../images/forward.png"));
+      case "home":    return image(require("../../images/home.png"));
+      case "remove":  return image(require("../../images/remove.png"));
+      default:        return image(require("../../images/transparent.png"));
     }
   }
+  
 }
 
 const styles = StyleSheet.create({

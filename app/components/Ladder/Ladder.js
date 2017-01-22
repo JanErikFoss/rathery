@@ -37,6 +37,10 @@ export default class Ladder extends Component {
               room={"main"}
               new={true} />
           }
+
+          <EndButtons
+            middleText={"Post a question"}
+            middleStyle={{backgroundColor: "mistyrose", height: 60}} />
         </View>
 
       </View>

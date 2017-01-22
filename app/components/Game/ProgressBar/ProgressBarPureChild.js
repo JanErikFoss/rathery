@@ -5,7 +5,6 @@ import ProgressBar from 'react-native-progress/Bar';
 
 export default class ProgressBarPureChild extends Component {
   render() {
-    console.log("Progress: ", this.props.progress);
     return (
       <ProgressBar 
         style={styles.bar}
