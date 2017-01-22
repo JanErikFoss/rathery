@@ -8,7 +8,7 @@ export default class Game extends Component {
         <TouchableHighlight style={[styles.touchable, {backgroundColor: this.props.backgroundColor}]}
             onPress={this.props.onPress} underlayColor={this.props.underlayColor || "transparent"}>
           <View style={styles.innerContainer}>
-            <Text style={[styles.text, styles.optionText]}>{this.props.voted ? this.getShortOption() : this.props.option}</Text>
+            <Text style={[styles.text, styles.optionText]}>{this.getOptionText()}</Text>
             
             {this.props.voted && 
               <View style={styles.infoTextContainer} >
@@ -17,8 +17,7 @@ export default class Game extends Component {
               </View>
             }
             {this.props.voted && this.props.chosen &&
-              <Image style={styles.checkmark}
-                  source={require("../images/checkmark.png")} />
+              <Image style={styles.checkmark} source={require("../../images/checkmark.png")} />
             }
           </View>
         </TouchableHighlight>
@@ -26,11 +25,17 @@ export default class Game extends Component {
     );
   }
 
+  getOptionText(){
+    return this.props.voted 
+      ? this.getShortOption() 
+      : this.props.option;
+  }
+
   getShortOption(){
     const maxChars = this.props.maxCharsAfterVoting || 100;
-    if(this.props.option.length <= maxChars) 
-      return this.props.option;
-    return this.props.option.substring(0, maxChars) + "...";
+    return this.props.option.length > maxChars
+      ? this.props.option.substring(0, maxChars) + "..."
+      : this.props.option;
   }
 
 }

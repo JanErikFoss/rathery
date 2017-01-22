@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, Dimensions, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import GameButton from "./GameButton"
-import MiddleInfo from "./MiddleInfo"
-import CountdownBar from "./CountdownBar"
+import ProgressBar from "./ProgressBar/ProgressBar"
 
 export default class Game extends Component {
   constructor(){
@@ -61,7 +60,6 @@ export default class Game extends Component {
   }
 
   render() {
-    console.log("Timestamp: ", this.state.tstamp);
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
         <View style={styles.container}>
@@ -76,7 +74,7 @@ export default class Game extends Component {
             underlayColor={"#c0392b"}
             maxCharsAfterVoting={100} />
 
-          <CountdownBar timestamp={this.state.tstamp || 0}/>
+          <ProgressBar timestamp={this.state.tstamp || 0}/>
 
           <GameButton 
               option={this.state.op2} 

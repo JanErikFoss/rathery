@@ -36,16 +36,16 @@ export default class LadderList extends Component {
 
   getImage(){
     switch(this.props.data.image){
-      case "rank1": return require("../images/shop/rank1.png");
-      case "rank2": return require("../images/shop/rank2.png");
-      case "rank3": return require("../images/shop/rank3.png");
-      case "rank4": return require("../images/shop/rank4.png");
-      case "rank5": return require("../images/shop/rank5.png");
-      case "rank6": return require("../images/shop/rank6.png");
-      case "rank7": return require("../images/shop/rank7.png");
-      case "rank8": return require("../images/shop/rank8.png");
-      case "trollface": return require("../images/shop/trollface.png");
-      default: return require("../images/transparent.png");
+      case "rank1": return require("../../images/shop/rank1.png");
+      case "rank2": return require("../../images/shop/rank2.png");
+      case "rank3": return require("../../images/shop/rank3.png");
+      case "rank4": return require("../../images/shop/rank4.png");
+      case "rank5": return require("../../images/shop/rank5.png");
+      case "rank6": return require("../../images/shop/rank6.png");
+      case "rank7": return require("../../images/shop/rank7.png");
+      case "rank8": return require("../../images/shop/rank8.png");
+      case "trollface": return require("../../images/shop/trollface.png");
+      default: return require("../../images/transparent.png");
     }
   }
 

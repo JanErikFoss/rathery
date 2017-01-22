@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 
-import EndButtons from "./EndButtons"
+import EndButtons from "../EndButtons/EndButtons"
 import LadderList from "./LadderList"
 
 export default class Ladder extends Component {

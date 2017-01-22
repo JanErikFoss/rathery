@@ -37,8 +37,8 @@ export default class LadderList extends Component {
           <View style={styles.buttonInnerContainer}>
             <Image style={styles.image} 
               source={ this.props.data.voted 
-                          ? require("../images/upvoted.png")
-                          : require("../images/upvote.png") } />
+                          ? require("../../images/upvoted.png")
+                          : require("../../images/upvote.png") } />
             <Text style={[styles.text, styles.votesText]}>
               {this.props.data.votes || 0}
             </Text>

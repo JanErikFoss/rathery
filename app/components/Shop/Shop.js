@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableHighlight, Keyboard, Dimensions, ListView } from 'react-native';
 
-import EndButtons from "./EndButtons"
+import EndButtons from "../EndButtons/EndButtons"
 import GridItem from "./GridItem"
 
 export default class Shop extends Component {
