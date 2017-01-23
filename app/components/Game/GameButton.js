@@ -10,8 +10,8 @@ export default class Game extends Component {
           <View style={styles.innerContainer}>
             <Text style={[styles.text, styles.optionText]}>{this.getOptionText()}</Text>
             
-            {(this.props.voted || !this.props.active) &&
-              <View style={styles.infoTextContainer} >
+            {((this.props.voted || !this.props.active) && !this.props.inactive) &&
+              <View style={styles.infoTextContainer}>
                 <Text style={[styles.text, styles.infoText, styles.votesText]}>{this.props.votes || 0}</Text>
                 <Text style={[styles.text, styles.infoText, styles.percentageText]}>{this.props.percentage || 0}%</Text>
               </View>
