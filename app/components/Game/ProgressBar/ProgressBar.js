@@ -15,8 +15,15 @@ export default class ProgressBar extends Component {
   }
 
   componentDidMount(){
-    const cb = ()=> this.setState({progress: (Date.now()-this.state.ts) / 20000});
+    const cb = ()=> this.setState({progress: this.getProgress()});
     Timer.setInterval("progress", ()=> !this.unmounted && cb(), 100);
+  }
+
+  getProgress(){
+    const prog = (Date.now()-this.state.ts) / 20000;
+    return prog < 1
+      ? 1-prog
+      : 2*(prog-1);
   }
 
   componentWillUnmount(){

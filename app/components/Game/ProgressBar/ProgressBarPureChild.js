@@ -19,5 +19,6 @@ const barPadding = 10;
 const styles = StyleSheet.create({
   bar: {
     marginLeft: barPadding,
+    marginVertical: 10
   }
 });

@@ -14,7 +14,7 @@ export default class Game extends Component {
       op1votes: 0,
       op2votes: 0,
       voted: false,
-      active: true,
+      active: false,
       tstamp: 0,
       room: "main",
     };
@@ -26,6 +26,7 @@ export default class Game extends Component {
     
     this.props.firebase.auth().onAuthStateChanged( user=> {
       if(!user) return console.log("Game.js: Failed to initialize game, user is null");
+      if(this.listenersSet) return console.log("Listeners already set");
 
       this.setState({uid: user.uid});
       this.uid = user.uid;
@@ -39,6 +40,8 @@ export default class Game extends Component {
 
       this.scoreRef = this.props.db.ref("users/"+user.uid+"/score");
       this.scoreRef.on("value", ss=> this.props.onScoreChanged(ss.val()) );
+
+      this.listenersSet = true;
     });
   }
 
@@ -68,6 +71,7 @@ export default class Game extends Component {
             votes={this.state.op1votes} 
             percentage={this.getPercentage(this.state.op1votes)}
             voted={this.state.voted}
+            active={this.state.active}
             chosen={this.state.chosen === "op1"}
             onPress={()=> this.vote("op1", this.state.op1votes)} 
             backgroundColor={"#e74c3c"}
@@ -81,6 +85,7 @@ export default class Game extends Component {
               votes={this.state.op2votes} 
               percentage={this.getPercentage(this.state.op2votes)}
               voted={this.state.voted} 
+              active={this.state.active}
               chosen={this.state.chosen === "op2"}
               onPress={()=> this.vote("op2", this.state.op2votes)}
               backgroundColor={"#27ae60"}
@@ -98,6 +103,7 @@ export default class Game extends Component {
 
   vote(op, votes){
     if(this.state.voted) return console.log("Already voted");
+    if(!this.state.active) return console.log("Question is inactive");
     console.log("Voting " + op + " with votes: " + votes);
 
     const  numRef = this.props.db.ref("rooms/"+this.state.room+"/"+op+"votes");
@@ -148,8 +154,8 @@ export default class Game extends Component {
 const styles = StyleSheet.create({
   container: {
     width: Dimensions.get('window').width,
-    height: (Dimensions.get('window').height - 20 - 40) / 2.6,
-    paddingBottom: 10
+    height: (Dimensions.get('window').height - 20 - 40) / 2.5,
+    paddingBottom: 8
   },
 
 });

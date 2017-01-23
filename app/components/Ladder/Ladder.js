@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, Alert } from 'react-native';
 
 import EndButtons from "../EndButtons/EndButtons"
 import LadderList from "./LadderList"
@@ -28,19 +28,19 @@ export default class Ladder extends Component {
 
           {this.state.ladderState === 0 &&
             <LadderList {...this.props} 
-              loadMax={50}
+              loadMax={20}
               room={"main"} />
           }
           {this.state.ladderState === 1 &&
             <LadderList {...this.props} 
-              loadMax={50}
+              loadMax={20}
               room={"main"}
               new={true} />
           }
 
-          <EndButtons
-            middleText={"Post a question"}
-            middleStyle={{backgroundColor: "mistyrose", height: 60}} />
+          <EndButtons style={{backgroundColor: "#22313F"}}
+            middleImage={"write"}
+            middleOnPress={this.onWritePressed.bind(this)} />
         </View>
 
       </View>
@@ -53,6 +53,12 @@ export default class Ladder extends Component {
     this.setState({
       ladderState: 1 - this.state.ladderState
     });
+  }
+
+  onWritePressed(){
+    console.log("Write pressed");
+
+
   }
 
 }

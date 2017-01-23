@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ListView, Text } from 'react-native';
+import { StyleSheet, View, ListView, Text, Dimensions } from 'react-native';
 
-import LadderListLoader from "./LadderListLoader"
-import LadderListItem from "./LadderListItem"
+import ListLoader from "./ListLoader"
+import ListItem from "./ListItem"
 
-export default class LadderListTop extends Component {
+export default class LadderList extends Component {
   constructor(props) {
     super(props);
 
@@ -31,15 +31,19 @@ export default class LadderListTop extends Component {
         : ref.orderByChild("votes").limitToLast(this.state.loadMax);
 
       this.listener = query.on("child_added", ss=>{
-        let listener = ss.ref.on("value", ss => this._onChildAdded({listener, ss}),
+        let listener = ss.ref.on("value", ss => this.onRowValue({listener, ss}),
           err=> console.log("Failed to listen for value in LadderList.js: ", err) );
       }, err=> console.log("Failed to listen for child_added in LadderList.js: ", err) );
 
     });
   }
 
-  _onChildAdded({listener, ss}){
-    if(this.unmounted) return console.log("Unmounted, disregarding child_added in LadderList.js");
+  onRowValue({listener, ss}){
+    if(this.unmounted) {
+      ss.ref.off("value", listener);
+      return console.log("Unmounted, disregarding onRowValue in LadderList.js");
+    }
+
     let row = ss.val() || {};
 
     row.id = ss.key;
@@ -131,7 +135,7 @@ export default class LadderListTop extends Component {
 
   componentWillUnmount(){
     this.ref && this.ref.off();
-    this.rows && this.rows.forEach( row => row.removeListener && row.removeListener() );
+    this.rows && this.rows.forEach( row=> row.removeListener() );
 
     this.unmounted = true;
   }
@@ -152,8 +156,8 @@ export default class LadderListTop extends Component {
     return (
       <View>
         {rowData.loading
-          ? <LadderListLoader />
-          : <LadderListItem 
+          ? <ListLoader />
+          : <ListItem 
               data={rowData} 
               onVote={this.onVote.bind(this)} />
         }
@@ -165,7 +169,7 @@ export default class LadderListTop extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: Dimensions.get('window').height - 120,
     backgroundColor: "#34495e",
   },
 

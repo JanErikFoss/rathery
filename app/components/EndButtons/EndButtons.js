@@ -7,6 +7,7 @@ export default class BottomButtons extends Component {
   render() {
     return (
       <View style={[this.props.top ? styles.container_top : styles.container_bottom, this.props.style]}>
+
         {!this.props.hideLeft &&
         <EndButton top={this.props.top}
           onPress={this.props.leftOnPress}
@@ -36,6 +37,7 @@ export default class BottomButtons extends Component {
           text={this.props.rightText}
           customComponent={this.props.customRight}
           right={true} />}
+
       </View>
     );
   }
@@ -59,10 +61,10 @@ const styles = StyleSheet.create({
   },
 
   left: {
-    left: 0
+    left: 5
   },
   right: {
-
+    right: 5
   },
   middle: {
 

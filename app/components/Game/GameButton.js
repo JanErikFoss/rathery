@@ -10,10 +10,10 @@ export default class Game extends Component {
           <View style={styles.innerContainer}>
             <Text style={[styles.text, styles.optionText]}>{this.getOptionText()}</Text>
             
-            {this.props.voted && 
+            {(this.props.voted || !this.props.active) &&
               <View style={styles.infoTextContainer} >
-                <Text style={[styles.text, styles.infoText, styles.votesText]}>{this.props.votes}</Text>
-                <Text style={[styles.text, styles.infoText, styles.percentageText]}>{this.props.percentage}%</Text>
+                <Text style={[styles.text, styles.infoText, styles.votesText]}>{this.props.votes || 0}</Text>
+                <Text style={[styles.text, styles.infoText, styles.percentageText]}>{this.props.percentage || 0}%</Text>
               </View>
             }
             {this.props.voted && this.props.chosen &&
@@ -26,7 +26,7 @@ export default class Game extends Component {
   }
 
   getOptionText(){
-    return this.props.voted 
+    return (this.props.voted || !this.props.active)
       ? this.getShortOption() 
       : this.props.option;
   }
@@ -45,7 +45,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 0,
     borderRadius: 6
   },
 

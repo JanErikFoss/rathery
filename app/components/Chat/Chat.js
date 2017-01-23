@@ -95,6 +95,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     borderRadius: 15,
+  },
+
+  chat: {
+    
   }
 
 });

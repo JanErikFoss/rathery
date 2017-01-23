@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, ActivityIndicator, Dimensions } from 'react-native';
 
-export default class LadderList extends Component {
+export default class Loader extends Component {
 
   render() {
     return (
