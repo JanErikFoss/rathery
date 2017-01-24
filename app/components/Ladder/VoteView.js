@@ -19,10 +19,10 @@ export default class PostView extends Component {
           </Text>
 
           <Text style={[styles.text, styles.infoText, styles.postedBy]}>
-            Posted by Lille-Kristoffer
+            Upvote if you want this polled
           </Text>
           <Text style={[styles.text, styles.infoText, styles.age]}>
-            {this.getTimeAgo()} ago
+            Posted {this.getTimeAgo()} ago
           </Text>
 
         </View>

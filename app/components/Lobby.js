@@ -11,7 +11,7 @@ export default class Lobby extends Component {
   constructor(props){
     super();
     this.state = {
-      lobbyState: 0,
+      lobbyState: 2,
       score: 0
     };
 

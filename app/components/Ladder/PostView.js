@@ -134,7 +134,8 @@ export default class PostView extends Component {
             voted={this.state.voted}
             votes={this.state.votes}
             timestamp={this.state.createdAt}
-            onPress={this.onVote.bind(this)}/>
+            onPress={this.onVote.bind(this)}
+            poster={this.uid} />
 
         </Arrows>
 
