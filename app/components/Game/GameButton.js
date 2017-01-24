@@ -8,12 +8,12 @@ export default class Game extends Component {
         <TouchableHighlight style={[styles.touchable, {backgroundColor: this.props.backgroundColor}]}
             onPress={this.props.onPress} underlayColor={this.props.underlayColor || "transparent"}>
           <View style={styles.innerContainer}>
-            <Text style={[styles.text, styles.optionText]}>{this.getOptionText()}</Text>
+            <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}>{this.getOptionText()}</Text>
             
             {((this.props.voted || !this.props.active) && !this.props.inactive) &&
               <View style={styles.infoTextContainer}>
-                <Text style={[styles.text, styles.infoText, styles.votesText]}>{this.props.votes || 0}</Text>
-                <Text style={[styles.text, styles.infoText, styles.percentageText]}>{this.props.percentage || 0}%</Text>
+                <Text style={[styles.text, styles.infoText, styles.votesText, {color: this.props.textColor || "white"}]}>{this.props.votes || 0}</Text>
+                <Text style={[styles.text, styles.infoText, styles.percentageText, {color: this.props.textColor || "white"}]}>{this.props.percentage || 0}%</Text>
               </View>
             }
             {this.props.voted && this.props.chosen &&

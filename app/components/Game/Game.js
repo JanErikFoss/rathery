@@ -74,7 +74,7 @@ export default class Game extends Component {
             active={this.state.active}
             chosen={this.state.chosen === "op1"}
             onPress={()=> this.vote("op1", this.state.op1votes)} 
-            backgroundColor={"#e74c3c"}
+            backgroundColor={"#EC644B"}
             underlayColor={"#c0392b"}
             maxCharsAfterVoting={100} />
 

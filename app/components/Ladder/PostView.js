@@ -16,6 +16,7 @@ export default class PostView extends Component {
       votes: 0,
       voted: false,
       index: this.props.index || 0,
+      limit: this.props.limit || 20
     };
 
     this.posts = [];
@@ -29,39 +30,62 @@ export default class PostView extends Component {
 
       this.uid = user.uid;
 
-      const roomRef = this.props.db.ref("ladders/"+this.state.room);
-      const query = this.props.new
-        ? roomRef.orderByChild("createdAt").limitToFirst(20)
-        : roomRef.orderByChild("votes").limitToLast(20);
+      this.loadBatch({limit: this.state.limit})
+      .then(()=> this.newPost(this.state.index) )
+      .catch( console.log );
 
+    });
+  }
+
+  loadBatch({limit}){
+    console.log("Loading batch with limit " + limit);
+    this.state.limit !== limit && this.setState({limit});
+
+    const roomRef = this.props.db.ref("ladders/"+this.state.room);
+    const query = this.props.new
+      ? roomRef.orderByChild("createdAt").limitToFirst(limit)
+      : roomRef.orderByChild("votes").limitToLast(limit);
+
+    const posts = [];
+
+    return new Promise( (resolve, reject)=>{
       query.once("value")
       .then(allSS=> allSS.forEach(ss=>{
-        this.posts.push({ key: ss.key, ...ss.val() })
+        posts.push({ key: ss.key, ...ss.val() })
       }))
-      .then(()=> this.posts.reverse() )
-      //.then(()=> this.posts.forEach(post=> this.setVoteListener(post)) )
-      .then(()=> this.posts.forEach(post=> this.loadVote(post)) )
+      .then(()=> posts.reverse() )
+      .then(()=> this.posts = posts )
       .then(()=> console.table(this.posts) )
-      .then( this.newPost.bind(this) )
-      .catch(err=> console.log("Error loading posts: ", err) );
-
+      .then( resolve )
+      .catch(err=> reject("Error loading batch: " + err) );
     });
   }
 
   newPost(index = 0){
     if(index < 0 || index >= this.posts.length) return console.log("Invalid index: " + index);
+    const post = this.posts[index];
+    console.log("Showing post with index " + index);
+
+    !post.voted && this.loadVote(post);
 
     this.removeListeners();
-    this.setVoteListener(this.posts[index]);
+    this.setVoteListener(post);
 
-    console.log("Showing post with index " + index + ": ", this.posts[index]);
+    //console.log("Showing post with index " + index + ": ", post);
     this.setState({
       index, 
-      ...this.posts[index],
-      voted: this.posts[index].voted,
+      ...post,
+      voted: post.voted,
+      votes: "...",
       leftActive: index > 0,
       rightActive: index < this.posts.length-1
     });
+
+    if(index === this.posts.length-1){
+      this.loadBatch({limit: this.state.limit+20})
+      .then(()=> console.log("Finished loading new batch") )
+      .catch( console.log );
+    }
   }
 
   loadVote(post){
@@ -72,20 +96,19 @@ export default class PostView extends Component {
 
     const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+post.key+"/"+this.uid);
     voteRef.once("value")
-    .then( ss => ss.exists() && hasVotedFor() )
+    .then( ss => {
+      post.voted = ss.exists();
+      this.state.key === post.key && this.setState({voted: post.voted});
+    })
     .catch(err=> console.log("Failed to load vote: ", err) );
   }
 
   setVoteListener(post){
-    const onValue = votes=>{
-      post.votes = votes;
-      this.state.key === post.key && this.setState({votes});
-    };
-
     const ref = this.props.db.ref("ladders/"+this.state.room+"/"+post.key+"/votes");
-    ref.on("value", 
-      ss => onValue(ss.val()), 
-      err=> console.log("Failed to listen for votes value: ", err) );
+    ref.on("value", ss => {
+      post.votes = ss.val();
+      this.state.key === post.key && this.setState({votes: post.votes});
+    }, err=> console.log("Failed to listen for votes value: ", err) );
 
     this.listeners.push(()=> ref.off() );
   }
@@ -112,17 +135,17 @@ export default class PostView extends Component {
 
         <GameButton inactive={true}
             option={this.state.op1} 
-            onPress={()=> console.log("Gamebutton clicked")} 
-            backgroundColor={"#e74c3c"}
-            underlayColor={"#e74c3c"} />
+            backgroundColor={"#EC644B"}
+            underlayColor={"#EC644B"} 
+            textColor={"white"} />
 
         <View style={styles.middleView} />
 
         <GameButton inactive={true}
             option={this.state.op2} 
-            onPress={()=> console.log("Gamebutton clicked")} 
             backgroundColor={"#27ae60"}
-            underlayColor={"#27ae60"} />
+            underlayColor={"#27ae60"} 
+            textColor={"white"} />
 
         <Arrows 
             leftInactive={this.state.active}
@@ -134,8 +157,7 @@ export default class PostView extends Component {
             voted={this.state.voted}
             votes={this.state.votes}
             timestamp={this.state.createdAt}
-            onPress={this.onVote.bind(this)}
-            poster={this.uid} />
+            onPress={this.onVote.bind(this)} />
 
         </Arrows>
 
@@ -145,7 +167,6 @@ export default class PostView extends Component {
 
   onVote(){
     if(!this.state.key) return console.log("Invalid key");
-    console.log("Voting " + this.state.key);
     const post = this.posts.find(post=> post.key === this.state.key);
     post.voted = true;
     this.setState({voted: true});
@@ -154,9 +175,7 @@ export default class PostView extends Component {
     const laddRef = this.props.db.ref("ladders/"+this.state.room+"/"+this.state.key+"/votes");
 
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
-    .then( () => console.log("Vote record saved") )
     .then( () => laddRef.transaction(votes=> votes ? ++votes : 1) )
-    .then( () => console.log("Successfully completed laddervote action") )
     .catch(err=>{
       console.log("Failed to vote: ", err);
       post.voted = false;

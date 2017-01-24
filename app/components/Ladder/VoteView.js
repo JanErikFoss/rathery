@@ -13,7 +13,7 @@ export default class PostView extends Component {
           <Image style={styles.image} 
             source={ this.props.voted 
                         ? require("../../images/upvoted.png")
-                        : require("../../images/upvote.png") } />
+                        : require("../../images/upvote_white.png") } />
           <Text style={[styles.text, styles.votesText]}>
             {this.props.votes || 0}
           </Text>
@@ -42,7 +42,7 @@ export default class PostView extends Component {
     if(!this.props.timestamp) return "Unknown time";
     const secs = Math.floor((new Date() - this.props.timestamp) / 1000);
     let i = Math.floor(secs / 31536000); //Interval
-    const s = i=> i===1 ? "" : "s";
+    const s = ()=> i===1 ? "" : "s";
 
     if (i >= 1) return i + " year"+s();
     i = Math.floor(secs / 2592000);
