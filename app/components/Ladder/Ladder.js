@@ -27,17 +27,16 @@ export default class Ladder extends Component {
         <View style={styles.questionContainer} >
 
           {this.state.ladderState === 0 &&
-            <PostView {...this.props} />
-          }
-          {this.state.ladderState === 1 &&
-            <PostView {...this.props} />
-          }
+            <PostView {...this.props} /> }
 
-          <EndButtons style={{backgroundColor: "#22313F"}}
-            middleImage={"write"}
-            middleOnPress={this.onWritePressed.bind(this)} />
+          {this.state.ladderState === 1 &&
+            <PostView {...this.props} new={true}/> }
 
         </View>
+
+        <EndButtons style={{backgroundColor: "#22313F"}}
+            middleImage={"write"}
+            middleOnPress={this.onWritePressed.bind(this)} />
 
       </View>
     );

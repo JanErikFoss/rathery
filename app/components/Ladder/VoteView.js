@@ -9,7 +9,7 @@ export default class PostView extends Component {
       <TouchableHighlight style={styles.highlight} underlayColor={"transparent"}
           onPress={this.onPress.bind(this)} >
         <View style={styles.buttonInnerContainer}>
-        
+
           <Image style={styles.image} 
             source={ this.props.voted 
                         ? require("../../images/upvoted.png")
@@ -22,7 +22,7 @@ export default class PostView extends Component {
             Posted by Lille-Kristoffer
           </Text>
           <Text style={[styles.text, styles.infoText, styles.age]}>
-            22 minutes ago
+            {this.getTimeAgo()} ago
           </Text>
 
         </View>
@@ -34,8 +34,27 @@ export default class PostView extends Component {
     if(this.props.voted) return console.log("Already voted");
 
     this.props.onPress 
-      ? this.props.onPress(this.props.data)
+      ? this.props.onPress()
       : console.log("No onPress prop at LadderListItem.js");
+  }
+
+  getTimeAgo(){
+    if(!this.props.timestamp) return "Unknown time";
+    const secs = Math.floor((new Date() - this.props.timestamp) / 1000);
+    let i = Math.floor(secs / 31536000); //Interval
+    const s = i=> i===1 ? "" : "s";
+
+    if (i >= 1) return i + " year"+s();
+    i = Math.floor(secs / 2592000);
+    if (i >= 1) return i + " month"+s();
+    i = Math.floor(secs / 86400);
+    if (i >= 1) return i + " day"+s();
+    i = Math.floor(secs / 3600);
+    if (i >= 1) return i + " hour"+s();
+    i = Math.floor(secs / 60);
+    if (i >= 1) return i + " minute"+s();
+    i = Math.floor(secs);
+    return i + " second"+s();
   }
 
 }

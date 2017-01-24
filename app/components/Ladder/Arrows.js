@@ -11,7 +11,7 @@ export default class PostView extends Component {
             onPress={this.props.onBackPressed}
             style={[styles.highlight, styles.backHighlight]}>
           <View style={styles.imageHolder}>
-            <Image style={[styles.image, styles.back]} source={require("../../images/back.png")} />
+            <Image style={[styles.image, styles.back]} source={this.getLeftImage()} />
           </View>
         </TouchableHighlight>
 
@@ -21,11 +21,23 @@ export default class PostView extends Component {
             onPress={this.props.onForwardPressed}
             style={[styles.highlight, styles.forwardHighlight]}>
           <View style={styles.imageHolder}>
-            <Image style={[styles.image, styles.forward]} source={require("../../images/forward.png")} />
+            <Image style={[styles.image, styles.forward]} source={this.getRightImage()} />
           </View>
         </TouchableHighlight>
       </View>
     );
+  }
+
+  getLeftImage(){
+    return this.props.leftActive
+      ? require("../../images/back.png")
+      : require("../../images/back.png");
+  }
+
+  getRightImage(){
+    return this.props.rightActive
+      ? require("../../images/forward.png")
+      : require("../../images/forward.png");
   }
 
 }
@@ -33,7 +45,7 @@ export default class PostView extends Component {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    flex: 2,
+    flex: 3,
     alignItems: "center",
   },
   highlight: {
