@@ -3,6 +3,7 @@ import { StyleSheet, View, Dimensions, Alert } from 'react-native';
 
 import EndButtons from "../EndButtons/EndButtons"
 import PostView from "./PostView"
+import WritePage from "./WritePage"
 
 export default class Ladder extends Component {
   constructor(props){
@@ -38,6 +39,10 @@ export default class Ladder extends Component {
             middleImage={"write"}
             middleOnPress={this.onWritePressed.bind(this)} />
 
+        {this.state.ladderState === 2 &&
+          <WritePage {...this.props} 
+            onFinished={()=> this.setState({ladderState: 0})} /> }
+
       </View>
     );
   }
@@ -45,15 +50,14 @@ export default class Ladder extends Component {
   onNewPressed(){
     console.log("Changing ladderState");
 
-    this.setState({
-      ladderState: 1 - this.state.ladderState
+    this.setState(prev=> {
+      return {ladderState: prev.ladderState === 1 ? 0 : 1};
     });
   }
 
   onWritePressed(){
     console.log("Write pressed");
-
-
+    this.setState({ladderState: 2});
   }
 
 }

@@ -55,13 +55,14 @@ export default class PostView extends Component {
       }))
       .then(()=> posts.reverse() )
       .then(()=> this.posts = posts )
-      .then(()=> console.table(this.posts) )
+      //.then(()=> console.table(this.posts) )
       .then( resolve )
       .catch(err=> reject("Error loading batch: " + err) );
     });
   }
 
   newPost(index = 0){
+    if(this.unmounted) return console.log("Unmounted, disregarding newPost() call in PostView.js")
     if(index < 0 || index >= this.posts.length) return console.log("Invalid index: " + index);
     const post = this.posts[index];
     console.log("Showing post with index " + index);
@@ -89,16 +90,11 @@ export default class PostView extends Component {
   }
 
   loadVote(post){
-    const hasVotedFor = ()=>{
-      post.voted = true;
-      this.state.key === post.key && this.setState({voted: true});
-    };
-
     const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+post.key+"/"+this.uid);
     voteRef.once("value")
     .then( ss => {
       post.voted = ss.exists();
-      this.state.key === post.key && this.setState({voted: post.voted});
+      this.state.key === post.key && !this.unmounted && this.setState({voted: post.voted});
     })
     .catch(err=> console.log("Failed to load vote: ", err) );
   }
@@ -107,7 +103,7 @@ export default class PostView extends Component {
     const ref = this.props.db.ref("ladders/"+this.state.room+"/"+post.key+"/votes");
     ref.on("value", ss => {
       post.votes = ss.val();
-      this.state.key === post.key && this.setState({votes: post.votes});
+      this.state.key === post.key && !this.unmounted && this.setState({votes: post.votes});
     }, err=> console.log("Failed to listen for votes value: ", err) );
 
     this.listeners.push(()=> ref.off() );
@@ -122,6 +118,7 @@ export default class PostView extends Component {
 
   componentWillUnmount(){
     this.removeListeners();
+    this.unmounted = true;
   }
 
   removeListeners(){
@@ -135,19 +132,19 @@ export default class PostView extends Component {
 
         <GameButton inactive={true}
             option={this.state.op1} 
-            backgroundColor={"#EC644B"}
-            underlayColor={"#EC644B"} 
+            backgroundColor={"#2C3E50"} //EC644B
+            underlayColor={"#2C3E50"} //EC644B
             textColor={"white"} />
 
         <View style={styles.middleView} />
 
         <GameButton inactive={true}
             option={this.state.op2} 
-            backgroundColor={"#27ae60"}
-            underlayColor={"#27ae60"} 
+            backgroundColor={"#2C3E50"} //27ae60
+            underlayColor={"#2C3E50"} //27ae60
             textColor={"white"} />
 
-        <Arrows 
+        <Arrows flex={2.7}
             leftInactive={this.state.active}
             rightInactive={this.state.active}
             onBackPressed={this.onBackPressed.bind(this)}
@@ -175,7 +172,9 @@ export default class PostView extends Component {
     const laddRef = this.props.db.ref("ladders/"+this.state.room+"/"+this.state.key+"/votes");
 
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
+    .then( () => console.log("Laddervote saved, doing transaction...") )
     .then( () => laddRef.transaction(votes=> votes ? ++votes : 1) )
+    .then( () => console.log("Successfully voted") )
     .catch(err=>{
       console.log("Failed to vote: ", err);
       post.voted = false;
@@ -193,7 +192,7 @@ const styles = StyleSheet.create({
   },
 
   middleView: {
-    padding: 10,
+    padding: 12,
   },
 
 });

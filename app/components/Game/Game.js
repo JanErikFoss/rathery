@@ -154,7 +154,7 @@ export default class Game extends Component {
 const styles = StyleSheet.create({
   container: {
     width: Dimensions.get('window').width,
-    height: (Dimensions.get('window').height - 20 - 40) / 2.5,
+    height: (Dimensions.get('window').height - 60) / 2.4,
     paddingBottom: 8
   },
 

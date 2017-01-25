@@ -6,7 +6,7 @@ import GameButton from "../Game/GameButton"
 export default class PostView extends Component {
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, {flex: this.props.flex || 3}]}>
         <TouchableHighlight underlayColor={"transparent"} 
             onPress={this.props.onBackPressed}
             style={[styles.highlight, styles.backHighlight]}>
@@ -36,8 +36,8 @@ export default class PostView extends Component {
 
   getRightImage(){
     return this.props.rightActive
-      ? require("../../images/forward.png")
-      : require("../../images/forward.png");
+      ? require("../../images/next.png")
+      : require("../../images/next.png");
   }
 
 }
@@ -45,7 +45,6 @@ export default class PostView extends Component {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    flex: 3,
     alignItems: "center",
   },
   highlight: {
