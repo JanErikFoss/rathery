@@ -38,9 +38,6 @@ export default class Game extends Component {
       this.roomRef.child("timestamp").on("value", ss=> this.setState({tstamp: ss.val()}) );
       this.roomRef.child("active").on("value", ss=> this.setState({active: ss.val()}) );
 
-      this.scoreRef = this.props.db.ref("users/"+user.uid+"/score");
-      this.scoreRef.on("value", ss=> this.props.onScoreChanged(ss.val()) );
-
       this.listenersSet = true;
     });
   }
@@ -48,7 +45,6 @@ export default class Game extends Component {
   componentWillUnmount(){
     //Both of these are untested, so they might not even work
     this.roomRef && this.roomRef.off();
-    this.scoreRef && this.scoreRef.off();
   }
 
   onOptionValue(val){
@@ -155,7 +151,7 @@ const styles = StyleSheet.create({
   container: {
     width: Dimensions.get('window').width,
     height: (Dimensions.get('window').height - 60) / 2.4,
-    paddingBottom: 8
+    paddingVertical: 8
   },
 
 });

@@ -28,11 +28,6 @@ export default class PostView extends Component {
     return (
       <View style={styles.container}>
 
-        <EndButtons top={true}
-          middleText={"Would you..."}
-          leftImage={"back"}
-          leftOnPress={this.props.onFinished} />
-
         <View style={styles.inputsHolder}>
 
           <TextInput style={[styles.input, styles.op1]}
@@ -99,10 +94,7 @@ export default class PostView extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    paddingTop: 60,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    flex: 1,
     backgroundColor: "#34495e",
   },
 

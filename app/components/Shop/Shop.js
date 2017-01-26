@@ -70,18 +70,13 @@ export default class Shop extends Component {
             renderRow={this.renderRow.bind(this)}
           />
 
-          <EndButtons top={true}
-            leftImage={"back"}
-            leftOnPress={this.props.onFinished}
-            middleText={"$" + this.props.score} />
-
       </View>
     );
   }
 
   renderRow(row){
     return (
-      <GridItem style={styles.item}
+      <GridItem
           data={row} {...this.props}
           onPress={this.onPress.bind(this)} />
     );
@@ -117,25 +112,19 @@ export default class Shop extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    flex: 1,
     backgroundColor: "#34495e",
   },
 
   listView: {
-    height: Dimensions.get('window').height - 60,
-    marginTop: 60,
+    flex: 1,
+    paddingTop: 4,
   },
 
   listContent: {
     justifyContent: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
-  },
-
-  item: {
-
   }
 
 

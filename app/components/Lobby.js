@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TouchableHighlight, Keyboard } from 'react-native';
+import { StyleSheet, View, TouchableHighlight, Keyboard, Platform } from 'react-native';
 
 import EndButtons from "./EndButtons/EndButtons"
 import Game from "./Game/Game"
@@ -11,8 +11,7 @@ export default class Lobby extends Component {
   constructor(props){
     super();
     this.state = {
-      lobbyState: 2,
-      score: 0
+      lobbyState: 0
     };
 
   }
@@ -23,24 +22,6 @@ export default class Lobby extends Component {
 
         <Game {...this.props} onScoreChanged={this.onScoreChanged.bind(this)}/>
         <Chat {...this.props} uid={this.uid} />
-
-        <EndButtons top={true}
-          leftImage={"cash"}
-          leftOnPress={this.shopPressed.bind(this)}
-          middleText={"$"+this.state.score}
-          rightImage={"ladder"}
-          rightOnPress={this.ladderPressed.bind(this)} />
-
-        { this.state.lobbyState === 1 &&
-          <Shop {...this.props} 
-            score={this.state.score}
-            onFinished={this.shopFinished.bind(this)} />
-        }
-
-        { this.state.lobbyState === 2 &&
-          <Ladder {...this.props}
-            onFinished={this.ladderFinished.bind(this)} />
-        }
 
       </View>
     );
@@ -73,7 +54,6 @@ export default class Lobby extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 60,
     flex: 1,
     backgroundColor: "#34495e"
   },

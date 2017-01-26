@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, Alert } from 'react-native';
+import { StyleSheet, View, Dimensions, Alert, TouchableHighlight, Image } from 'react-native';
 
 import EndButtons from "../EndButtons/EndButtons"
 import PostView from "./PostView"
@@ -18,13 +18,6 @@ export default class Ladder extends Component {
     return (
       <View style={styles.container}>
 
-        <EndButtons top={true}
-          leftImage={"back"}
-          leftOnPress={this.props.onFinished}
-          middleText={this.state.ladderState === 0 ? "Best questions" : "New questions"}
-          rightImage={this.state.ladderState === 0 ? "new" : "best"}
-          rightOnPress={this.onNewPressed.bind(this)} />
-
         <View style={styles.questionContainer} >
 
           {this.state.ladderState === 0 &&
@@ -35,9 +28,12 @@ export default class Ladder extends Component {
 
         </View>
 
-        <EndButtons style={{backgroundColor: "#22313F"}}
-            middleImage={"write"}
-            middleOnPress={this.onWritePressed.bind(this)} />
+        <TouchableHighlight style={styles.writeHighlight}
+            onPress={this.onNewPressed.bind(this)} underlayColor={"transparent"}>
+          <Image source={this.state.ladderState == 0 
+            ? require("../../images/new.png")
+            : require("../../images/best.png")} style={styles.writeImage}/>
+        </TouchableHighlight>
 
         {this.state.ladderState === 2 &&
           <WritePage {...this.props} 
@@ -64,15 +60,23 @@ export default class Ladder extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    flex: 1,
     backgroundColor: "#34495e"
   },
 
   questionContainer: {
-    height: Dimensions.get('window').height - 60,
-    marginTop: 60,
+    flex: 1,
+    paddingTop: 8,
+  },
+
+  writeHighlight: {
+    padding: 5,
+    alignItems: "center",
+
+  },
+  writeImage: {
+    height: 50,
+    width: 50,
   }
 
 });
