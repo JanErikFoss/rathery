@@ -21,23 +21,22 @@ export default class Chat extends Component {
 
     this.props.firebase.auth().onAuthStateChanged( user=> {
       if(!user) return console.log("Chat.js: Failed to initialize game, user is null");
+      if(this.listenersSet) return console.log("Listeners already set in Chat.js, dismissing");
 
       this.setState({uid: user.uid});
 
-      this.props.db.ref("users/"+user.uid+"/name").on("value", ss=> {
-        this.setState({name: ss.val() || "Some user"});
-      });
+      this.props.db.ref("users/"+user.uid+"/name").once("value")
+      .then(ss=> this.setState({name: ss.val() || "Some user"}) )
+      .catch(err=> console.log("Failed to get name in Chat.js: ", err) )
+
 
       this.props.db.ref("chats/main").limitToLast(1).on("child_added", ss=>{
-        const message = ss.val();
-        //console.log("Message received: ", message);
-
         this.setState(prevState => {
-          return { messages: GiftedChat.append(prevState.messages, message) };
+          return { messages: GiftedChat.append(prevState.messages, ss.val()) };
         });
-
       });
 
+      this.listenersSet = true;
     });
 
     this.setState({

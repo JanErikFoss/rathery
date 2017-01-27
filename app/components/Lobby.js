@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableHighlight, Keyboard, Platform } from 'react-native';
 
-import EndButtons from "./EndButtons/EndButtons"
 import Game from "./Game/Game"
 import Chat from "./Chat/Chat"
-import Shop from "./Shop/Shop"
-import Ladder from "./Ladder/Ladder"
 
 export default class Lobby extends Component {
   constructor(props){
