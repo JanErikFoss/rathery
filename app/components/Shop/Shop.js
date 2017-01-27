@@ -10,7 +10,6 @@ export default class Shop extends Component {
 
     this.listenerOffs = [];
 
-    this.rows = [];
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     const initialRows = [{title: "Loading", loading: true}];
 
@@ -28,6 +27,7 @@ export default class Shop extends Component {
       this.uid = user.uid;
 
       this.props.db.ref("shop").once("value", shopSS => {
+        this.rows = [];
 
         shopSS.val().forEach( (row, index) => {
           if(!row) return console.log("Invalid shop item at index " + index);
