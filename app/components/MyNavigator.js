@@ -6,13 +6,16 @@ import Shop from "./Shop/Shop";
 import Ladder from "./Ladder/Ladder";
 
 export default class MyNavigator extends Component {
+
   componentWillMount(){
     console.log("Navigator props: ", this.props);
+
+    let ladderTitleRef;
 
     this.routes = [
       {
         index: 0, 
-        render: ()=> this.renderScene(( <Shop {...this.props}/> )),
+        render: ()=> this.renderScene(( <Shop {...this.props} /> )),
         title: ()=> this.getTitle("$" + this.props.score || 0), 
         leftButton: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
@@ -23,7 +26,7 @@ export default class MyNavigator extends Component {
 
       {
         index: 1, 
-        render: ()=> this.renderScene(( <Lobby {...this.props}/> )),
+        render: ()=> this.renderScene(( <Lobby {...this.props} /> )),
         title: ()=> this.getTitle("$" + this.props.score || 0), 
         leftButton: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/cash.png"), 
@@ -37,8 +40,8 @@ export default class MyNavigator extends Component {
 
       {
         index: 2, 
-        render: ()=> this.renderScene(( <Ladder {...this.props}/> )),
-        title: ()=> this.getTitle("Submitted posts"), 
+        render: ()=> this.renderScene(( <Ladder {...this.props} titleRef={ref=> ladderTitleRef = ref} titleChanged={this.forceUpdate.bind(this)}/> )),
+        title: ()=> this.getTitle(ladderTitleRef ? ladderTitleRef() : "Submissions"), 
         leftButton: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[1])

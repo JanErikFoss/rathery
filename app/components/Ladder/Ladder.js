@@ -12,6 +12,8 @@ export default class Ladder extends Component {
     this.state = {
       ladderState: this.props.ladderState || 0,
     };
+
+    this.props.titleRef(()=> this.state.ladderState === 0 ? "Best submissions" : "New submissions");
   }
 
   render() {
@@ -29,26 +31,22 @@ export default class Ladder extends Component {
         </View>
 
         <TouchableHighlight style={styles.writeHighlight}
-            onPress={this.onNewPressed.bind(this)} underlayColor={"transparent"}>
+            onPress={this.changeLadderState.bind(this)} underlayColor={"transparent"}>
           <Image source={this.state.ladderState == 0 
             ? require("../../images/new.png")
             : require("../../images/best.png")} style={styles.writeImage}/>
         </TouchableHighlight>
 
-        {this.state.ladderState === 2 &&
-          <WritePage {...this.props} 
-            onFinished={()=> this.setState({ladderState: 0})} /> }
-
       </View>
     );
   }
 
-  onNewPressed(){
+  changeLadderState(){
     console.log("Changing ladderState");
 
     this.setState(prev=> {
       return {ladderState: prev.ladderState === 1 ? 0 : 1};
-    });
+    }, this.props.titleChanged);
   }
 
   onWritePressed(){

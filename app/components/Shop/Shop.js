@@ -68,6 +68,7 @@ export default class Shop extends Component {
             contentContainerStyle={styles.listContent}
             dataSource={this.state.ds}
             renderRow={this.renderRow.bind(this)}
+            removeClippedSubviews={false}
           />
 
       </View>
@@ -83,6 +84,7 @@ export default class Shop extends Component {
   }
 
   onPress(row){
+    console.log("Score: " + this.props.score);
     if(row.bought) return console.log("Already bought");
     if(!row.active) return console.log("Row is inactive");
     if(this.props.score < row.cost) return console.log("Cannot afford that item");
