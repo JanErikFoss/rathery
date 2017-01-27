@@ -10,10 +10,10 @@ export default class Ladder extends Component {
     super(props);
 
     this.state = {
-      ladderState: this.props.ladderState || 0,
+      showNew: this.props.showNew || false //We dont rely on the prop
     };
 
-    this.props.titleRef(()=> this.state.ladderState === 0 ? "Best submissions" : "New submissions");
+    this.props.titleRef(()=> this.state.showNew ? "Best submissions" : "New submissions");
   }
 
   render() {
@@ -22,17 +22,17 @@ export default class Ladder extends Component {
 
         <View style={styles.questionContainer} >
 
-          {this.state.ladderState === 0 &&
+          {this.state.showNew ||
             <PostView {...this.props} /> }
 
-          {this.state.ladderState === 1 &&
+          {this.state.showNew &&
             <PostView {...this.props} new={true}/> }
 
         </View>
 
         <TouchableHighlight style={styles.writeHighlight}
-            onPress={this.changeLadderState.bind(this)} underlayColor={"transparent"}>
-          <Image source={this.state.ladderState == 0 
+            onPress={this.changeState.bind(this)} underlayColor={"transparent"}>
+          <Image source={this.state.showNew
             ? require("../../images/new.png")
             : require("../../images/best.png")} style={styles.writeImage}/>
         </TouchableHighlight>
@@ -41,17 +41,12 @@ export default class Ladder extends Component {
     );
   }
 
-  changeLadderState(){
-    console.log("Changing ladderState");
+  changeState(){
+    console.log("Changing showNew");
 
     this.setState(prev=> {
-      return {ladderState: prev.ladderState === 1 ? 0 : 1};
+      return {showNew: !prev.showNew};
     }, this.props.titleChanged);
-  }
-
-  onWritePressed(){
-    console.log("Write pressed");
-    this.setState({ladderState: 2});
   }
 
 }

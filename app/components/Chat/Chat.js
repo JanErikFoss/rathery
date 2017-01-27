@@ -13,31 +13,12 @@ export default class Chat extends Component {
     this.state = {
       messages: [],
       uid: "loading user id...",
-      name: "loading username..."
+      name: "Some user"
     };
   }
 
   componentWillMount() {
-
-    this.props.firebase.auth().onAuthStateChanged( user=> {
-      if(!user) return console.log("Chat.js: Failed to initialize game, user is null");
-      if(this.listenersSet) return console.log("Listeners already set in Chat.js, dismissing");
-
-      this.setState({uid: user.uid});
-
-      this.props.db.ref("users/"+user.uid+"/name").once("value")
-      .then(ss=> this.setState({name: ss.val() || "Some user"}) )
-      .catch(err=> console.log("Failed to get name in Chat.js: ", err) )
-
-
-      this.props.db.ref("chats/main").limitToLast(1).on("child_added", ss=>{
-        this.setState(prevState => {
-          return { messages: GiftedChat.append(prevState.messages, ss.val()) };
-        });
-      });
-
-      this.listenersSet = true;
-    });
+    this.props.initFirebase(this.initialized.bind(this));
 
     this.setState({
       messages: [
@@ -56,15 +37,31 @@ export default class Chat extends Component {
 
   }
 
+  initialized(user){
+    if(!user) return console.log("Chat.js: Failed to initialize game, user is null");
+
+    this.setState({uid: user.uid});
+
+    this.props.db.ref("users/"+user.uid+"/name").once("value")
+    .then(ss=> ss.val() && this.setState({name: ss.val()}) )
+    .catch(err=> console.log("Failed to get name in Chat.js: ", err) )
+
+    this.props.db.ref("chats/main").limitToLast(1).on("child_added", ss=>{
+      this.setState(prevState => {
+        return { messages: GiftedChat.append(prevState.messages, ss.val()) };
+      });
+    });
+  }
+
   onSend(messages = []) {
-    Keyboard.dismiss();
+    this.props.dismissOnSend && Keyboard.dismiss();
 
     const message = messages[messages.length - 1];
     message._id = this.props.db.ref("chats/main").push().key;
 
-    //console.log("Saving message: ", message);
-
-    this.props.db.ref("chats/main/"+message._id).set(message);
+    this.props.db.ref("chats/main/"+message._id).set(message)
+    .then(()=> console.log("Successfully sent message") )
+    .catch(err=> console.log("Failed to send message: ", err) );
   }
 
   render() {

@@ -10,7 +10,7 @@ export default class Lobby extends Component {
       <View style={styles.container}>
 
         <Game {...this.props} />
-        <Chat {...this.props} />
+        <Chat {...this.props} dismissOnSend={true} />
 
       </View>
     );
@@ -20,7 +20,7 @@ export default class Lobby extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#34495e"
+    backgroundColor: "#34495e",
   },
 
 });

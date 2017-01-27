@@ -25,16 +25,16 @@ export default class PostView extends Component {
   }
 
   componentDidMount(){
-    this.props.firebase.auth().onAuthStateChanged( user=> {
-      if(!user) return console.log("LadderList.js: Failed to initialize, user is null");
+    this.props.initFirebase(this.initialized.bind(this));
+  }
+  
+  initialized(user){
+    if(!user) return console.log("LadderList.js: Failed to initialize, user is null");
+    this.uid = user.uid;
 
-      this.uid = user.uid;
-
-      this.loadBatch({limit: this.state.limit})
-      .then(()=> this.newPost(this.state.index) )
-      .catch( console.log );
-
-    });
+    this.loadBatch({limit: this.state.limit})
+    .then(()=> this.newPost(this.state.index) )
+    .catch( console.log );
   }
 
   loadBatch({limit}){
