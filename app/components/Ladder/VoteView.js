@@ -18,11 +18,17 @@ export default class PostView extends Component {
             {this.props.votes || 0}
           </Text>
 
+          {!this.props.new && 
+            <Text style={[styles.text, styles.infoText, styles.index]}>
+              #{this.props.index + 1}
+            </Text> 
+          }
+          {this.props.new && 
           <Text style={[styles.text, styles.infoText, styles.postedBy]}>
             Upvote if you want this polled
-          </Text>
+          </Text> }
           <Text style={[styles.text, styles.infoText, styles.age]}>
-            Posted {this.getTimeAgo()} ago
+            {this.getTimeAgo()}
           </Text>
 
         </View>
@@ -39,7 +45,12 @@ export default class PostView extends Component {
   }
 
   getTimeAgo(){
-    if(!this.props.timestamp) return "Unknown time";
+    return this.props.timestamp 
+      ? "Posted " + this.getTime() + " ago"
+      : " ";
+  }
+
+  getTime(){
     const secs = Math.floor((new Date() - this.props.timestamp) / 1000);
     let i = Math.floor(secs / 31536000); //Interval
     const s = ()=> i===1 ? "" : "s";
@@ -59,15 +70,11 @@ export default class PostView extends Component {
 
 }
 
-const imageSize = Dimensions.get('window').width * 0.12;
-const imagePadding = 5;
 const styles = StyleSheet.create({
   highlight: {
     flexDirection: "row",
     flex: 1,
     justifyContent: "center",
-    width: imageSize,
-    marginHorizontal: 20,
   }, 
   buttonInnerContainer: {
     flex: 1,
@@ -79,17 +86,23 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontWeight: "100",
-    paddingTop: 20,
+    paddingTop: 15,
     color: "silver",
+  },
+  postedBy: {
+    textAlign: "center"
+  },
+  index: {
+    fontWeight: "normal",
   },
 
   image: {
-    width: imageSize,
-    height: imageSize,
+    width: 50,
+    height: 50,
   },
   votesText: {
-    fontSize: 20,
+    fontSize: 24,
     textAlign: "center",
-  }
+  },
 
 });

@@ -19,22 +19,6 @@ export default class Chat extends Component {
 
   componentWillMount() {
     this.props.initFirebase(this.initialized.bind(this));
-
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: "Hey, welcome back!",
-          createdAt: Date.now(),
-          user: {
-            _id: 2,
-            name: 'Rathery',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-        },
-      ],
-    });
-
   }
 
   initialized(user){

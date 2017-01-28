@@ -24,7 +24,9 @@ export default class Rather extends Component {
   }
 
   initFirebaseWithCallback(cb){
+    let initialized = false;
     Firebase.auth().onAuthStateChanged( user=>{
+      if(initialized) return console.log("Already initialized, dismissing");
       user ? cb(user) : console.log("Firebase init failed, user was null in onAuthStateChanged");
     });
   }

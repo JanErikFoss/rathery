@@ -85,6 +85,7 @@ export default class PostView extends Component {
     if(index === this.posts.length-1){
       this.loadBatch({limit: this.state.limit+20})
       .then(()=> console.log("Finished loading new batch") )
+      .then( this.forceUpdate.bind(this) )
       .catch( console.log );
     }
   }
@@ -132,25 +133,28 @@ export default class PostView extends Component {
 
         <GameButton inactive={true}
             option={this.state.op1} 
-            backgroundColor={"#2C3E50"} //EC644B
-            underlayColor={"#2C3E50"} //EC644B
+            backgroundColor={"#2C3E50"}
+            underlayColor={"#2C3E50"}
             textColor={"white"} />
 
         <View style={styles.middleView} />
 
         <GameButton inactive={true}
             option={this.state.op2} 
-            backgroundColor={"#2C3E50"} //27ae60
-            underlayColor={"#2C3E50"} //27ae60
+            backgroundColor={"#2C3E50"}
+            underlayColor={"#2C3E50"}
             textColor={"white"} />
 
-        <Arrows flex={2.7}
-            leftInactive={this.state.active}
-            rightInactive={this.state.active}
+        <Arrows
+            index={this.state.index}
+            leftActive={this.state.index > 0}
+            rightActive={this.state.index < this.posts.length-1}
             onBackPressed={this.onBackPressed.bind(this)}
             onForwardPressed={this.onForwardPressed.bind(this)} >
 
           <VoteView 
+            new={this.props.new}
+            index={this.state.index}
             voted={this.state.voted}
             votes={this.state.votes}
             timestamp={this.state.createdAt}

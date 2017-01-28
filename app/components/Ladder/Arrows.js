@@ -6,21 +6,27 @@ import GameButton from "../Game/GameButton"
 export default class PostView extends Component {
   render() {
     return (
-      <View style={[styles.container, {flex: this.props.flex || 3}]}>
+      <View style={styles.container}>
         <TouchableHighlight underlayColor={"transparent"} 
-            onPress={this.props.onBackPressed}
-            style={[styles.highlight, styles.backHighlight]}>
-          <View style={styles.imageHolder}>
+            onPress={()=> this.props.leftActive && this.props.onBackPressed()}
+            style={[styles.highlight, {alignItems: "flex-start"}]}>
+          <View style={[styles.innerContainer, {justifyContent: "flex-start"}]}>
             <Image style={[styles.image, styles.back]} source={this.getLeftImage()} />
+            <Text style={styles.indexText}>
+              {this.props.leftActive ? this.props.index : " "}
+            </Text> 
           </View>
         </TouchableHighlight>
 
         {this.props.children}
 
         <TouchableHighlight underlayColor={"transparent"} 
-            onPress={this.props.onForwardPressed}
-            style={[styles.highlight, styles.forwardHighlight]}>
-          <View style={styles.imageHolder}>
+            onPress={()=> this.props.rightActive && this.props.onForwardPressed()}
+            style={[styles.highlight, {alignItems: "flex-end"}]}>
+          <View style={[styles.innerContainer, {justifyContent: "flex-end"}]}>
+            <Text style={styles.indexText}>
+              {this.props.rightActive ? this.props.index + 2 : " "}
+            </Text> 
             <Image style={[styles.image, styles.forward]} source={this.getRightImage()} />
           </View>
         </TouchableHighlight>
@@ -31,27 +37,41 @@ export default class PostView extends Component {
   getLeftImage(){
     return this.props.leftActive
       ? require("../../images/back.png")
-      : require("../../images/back.png");
+      : require("../../images/transparent.png");
   }
 
   getRightImage(){
     return this.props.rightActive
       ? require("../../images/next.png")
-      : require("../../images/next.png");
+      : require("../../images/transparent.png");
   }
 
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 2.7,
     flexDirection: "row",
     alignItems: "center",
   },
   highlight: {
-    flexDirection: "column",
+    width: Dimensions.get("window").width / 5,
+    alignItems: "flex-end",
   },
-  imageHolder: {
+
+  innerContainer: {
+    flex: 1,
     flexDirection: "row",
+    alignItems: "center",
+  },
+  innerContainerRight: {
+    justifyContent: "flex-end",
+  },
+  innerContainerLeft: {
+    justifyContent: "flex-start",
+  },
+
+  imageHolder: {
     flex: 1,
     alignItems: "center",
   },
@@ -59,5 +79,9 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
   },
+
+  indexText: {
+    color: "silver",
+  }
 
 });

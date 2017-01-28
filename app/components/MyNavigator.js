@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Navigator, Text, TouchableHighlight, Image, Platform } from 'react-native';
 
-import Lobby from "./Lobby";
-import Shop from "./Shop/Shop";
-import Ladder from "./Ladder/Ladder";
+import Lobby from "./Lobby"
+import Shop from "./Shop/Shop"
+import Ladder from "./Ladder/Ladder"
+import WritePage from "./Ladder/WritePage"
 
 export default class MyNavigator extends Component {
 
@@ -16,7 +17,7 @@ export default class MyNavigator extends Component {
       {
         index: 0, 
         render: ()=> this.renderScene(( <Shop {...this.props} /> )),
-        title: ()=> this.getTitle("$" + this.props.score || 0), 
+        title: ()=> this.getTitle("$" + (this.props.score || 0)), 
         leftButton: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[1]),
@@ -45,6 +46,20 @@ export default class MyNavigator extends Component {
         leftButton: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[1])
+        }),
+        rightButton: (route, navigator, index, navState)=> this.getButton({
+          image: require("../images/write.png"), 
+          onPress: ()=> navigator.jumpTo(this.routes[3])
+        }),
+      },
+
+      {
+        index: 3, 
+        render: ()=> this.renderScene(( <WritePage {...this.props} /> )),
+        title: ()=> this.getTitle("Would you..."), 
+        leftButton: (route, navigator, index, navState)=> this.getButton({
+          image: require("../images/back.png"), 
+          onPress: ()=> navigator.jumpTo(this.routes[2])
         }),
         rightButton: (route, navigator, index, navState)=> null,
       },

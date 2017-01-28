@@ -16,12 +16,10 @@ export default class PostView extends Component {
   }
 
   componentDidMount(){
-    this.props.firebase.auth().onAuthStateChanged( user=> {
-      if(!user) return console.log("LadderList.js: Failed to initialize, user is null");
-
-      this.uid = user.uid;
-
-    });
+    this.props.initFirebase(this.initialized.bind(this));
+  }
+  initialized(user){
+    this.uid = user.uid;
   }
 
   render() {
@@ -52,12 +50,10 @@ export default class PostView extends Component {
           style={styles.avoidingView} 
           behavior={"padding"}>
 
-          <View style={styles.highlightHolder}>
-            <TouchableHighlight style={styles.highlight} underlayColor={"transparent"}
-                onPress={this.onFinish.bind(this)}>
-              <Image source={require("../../images/forward.png")} style={styles.bottomImage} />
-            </TouchableHighlight>
-          </View>
+          <TouchableHighlight style={styles.highlight}
+            onPress={this.onFinish.bind(this)} underlayColor={"transparent"}>
+            <Image source={require("../../images/forward.png")} style={styles.image}/>
+          </TouchableHighlight>
 
         </KeyboardAvoidingView>
 
@@ -96,6 +92,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#34495e",
+    paddingTop: 8
   },
 
   middleText: {
@@ -126,16 +123,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
-  },
-  highlightHolder: {
-    flex: 1, 
-    alignItems: "center",
-    backgroundColor: "#22313F",
+    justifyContent: "center",
   },
   highlight: {
+    flex: 1,
+    alignItems: "center",
     padding: 5,
   },
-  bottomImage:{
+  image: {
     height: 50,
     width: 50,
   }
