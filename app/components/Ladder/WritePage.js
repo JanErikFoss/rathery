@@ -79,7 +79,9 @@ export default class PostView extends Component {
       votes: 0,
     })
     .then(()=> console.log("Finished upload") )
-    .then(()=> Alert.alert("Done", "Your post has been saved", [{text: "ok", onPress: this.props.onFinished}]) )
+    //.then(()=> Alert.alert("Done", "Your post has been saved", [{text: "ok", onPress: this.props.onFinished}]) )
+    .then(()=> this.setState({op1: "", op2: ""}) )
+    .then(()=> this.props.navigator.jumpTo(this.props.routes[this.props.route.index - 1]) )
     .catch(err=> {
       console.log("Failed to upload: " + err);
       Alert.alert("Oh no", "An error occurred, please try again", [{text: "ok"}])
@@ -92,7 +94,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#34495e",
-    paddingTop: 8
   },
 
   middleText: {
@@ -102,7 +103,8 @@ const styles = StyleSheet.create({
   },
 
   inputsHolder: {
-    height: Dimensions.get('window').height / 2.7
+    height: 264,
+    paddingVertical: 8,
   },
   inputHolders: {
     flex: 1,
@@ -120,7 +122,6 @@ const styles = StyleSheet.create({
   op2: {},
 
   avoidingView: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "center",

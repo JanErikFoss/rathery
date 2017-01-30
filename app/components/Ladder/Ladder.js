@@ -20,21 +20,17 @@ export default class Ladder extends Component {
     return (
       <View style={styles.container}>
 
-        <View style={styles.questionContainer} >
+        {this.state.showNew ||
+          <PostView {...this.props} /> }
 
-          {this.state.showNew ||
-            <PostView {...this.props} /> }
+        {this.state.showNew &&
+          <PostView {...this.props} new={true}/> }
 
-          {this.state.showNew &&
-            <PostView {...this.props} new={true}/> }
-
-        </View>
-
-        <TouchableHighlight style={styles.writeHighlight}
+        <TouchableHighlight style={styles.highlight}
             onPress={this.changeState.bind(this)} underlayColor={"transparent"}>
           <Image source={this.state.showNew
             ? require("../../images/new.png")
-            : require("../../images/best.png")} style={styles.writeImage}/>
+            : require("../../images/best.png")} style={styles.image}/>
         </TouchableHighlight>
 
       </View>
@@ -42,8 +38,6 @@ export default class Ladder extends Component {
   }
 
   changeState(){
-    console.log("Changing showNew");
-
     this.setState(prev=> {
       return {showNew: !prev.showNew};
     }, this.props.titleChanged);
@@ -59,15 +53,14 @@ const styles = StyleSheet.create({
 
   questionContainer: {
     flex: 1,
-    paddingTop: 8,
   },
 
-  writeHighlight: {
+  highlight: {
     padding: 5,
     alignItems: "center",
 
   },
-  writeImage: {
+  image: {
     height: 50,
     width: 50,
   }

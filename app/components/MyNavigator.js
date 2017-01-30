@@ -16,24 +16,24 @@ export default class MyNavigator extends Component {
     this.routes = [
       {
         index: 0, 
-        render: ()=> this.renderScene(( <Shop {...this.props} /> )),
+        render: (route, navigator)=> this.renderScene(( <Shop {...this.props} routes={this.routes} route={route} navigator={navigator}/> )),
         title: ()=> this.getTitle("$" + (this.props.score || 0)), 
-        leftButton: (route, navigator, index, navState)=> this.getButton({
+        left: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[1]),
         }),
-        rightButton: ()=> null,
+        right: ()=> null,
       },
 
       {
         index: 1, 
-        render: ()=> this.renderScene(( <Lobby {...this.props} /> )),
+        render: (route, navigator)=> this.renderScene(( <Lobby {...this.props} routes={this.routes} route={route} navigator={navigator}/> )),
         title: ()=> this.getTitle("$" + this.props.score || 0), 
-        leftButton: (route, navigator, index, navState)=> this.getButton({
+        left: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/cash.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[0])
         }),
-        rightButton: (route, navigator, index, navState)=> this.getButton({
+        right: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/ladder.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[2])
         }),
@@ -41,13 +41,13 @@ export default class MyNavigator extends Component {
 
       {
         index: 2, 
-        render: ()=> this.renderScene(( <Ladder {...this.props} titleRef={ref=> ladderTitleRef = ref} titleChanged={this.forceUpdate.bind(this)}/> )),
+        render: (route, navigator)=> this.renderScene(( <Ladder {...this.props} routes={this.routes} route={route} navigator={navigator} titleRef={ref=> ladderTitleRef = ref} titleChanged={this.forceUpdate.bind(this)}/> )),
         title: ()=> this.getTitle(ladderTitleRef ? ladderTitleRef() : "Submissions"), 
-        leftButton: (route, navigator, index, navState)=> this.getButton({
+        left: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[1])
         }),
-        rightButton: (route, navigator, index, navState)=> this.getButton({
+        right: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/write.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[3])
         }),
@@ -55,13 +55,13 @@ export default class MyNavigator extends Component {
 
       {
         index: 3, 
-        render: ()=> this.renderScene(( <WritePage {...this.props} /> )),
+        render: (route, navigator)=> this.renderScene(( <WritePage {...this.props} routes={this.routes} route={route} navigator={navigator}/> )),
         title: ()=> this.getTitle("Would you..."), 
-        leftButton: (route, navigator, index, navState)=> this.getButton({
+        left: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[2])
         }),
-        rightButton: (route, navigator, index, navState)=> null,
+        right: (route, navigator, index, navState)=> null,
       },
 
 
@@ -74,7 +74,7 @@ export default class MyNavigator extends Component {
       <Navigator style={styles.navigator}
           initialRoute={this.routes[1]}
           initialRouteStack={this.routes}
-          renderScene={(route, navigator)=> route.render()}
+          renderScene={(route, navigator)=> route.render(route, navigator)}
           navigationBar={this.renderNavBar()} />
     );
   }
@@ -83,8 +83,8 @@ export default class MyNavigator extends Component {
     return(
       <Navigator.NavigationBar
          routeMapper={{
-           LeftButton: (route, navigator, index, navState) => route.leftButton(route, navigator, index, navState),
-           RightButton: (route, navigator, index, navState) => route.rightButton(route, navigator, index, navState),
+           LeftButton: (route, navigator, index, navState) => route.left(route, navigator, index, navState),
+           RightButton: (route, navigator, index, navState) => route.right(route, navigator, index, navState),
            Title: (route, navigator, index, navState) => route.title(route, navigator, index, navState),
          }}
          style={styles.navBar}

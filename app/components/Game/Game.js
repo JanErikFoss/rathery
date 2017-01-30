@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Dimensions, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Keyboard, Alert } from 'react-native';
 
 import GameButton from "./GameButton"
 import ProgressBar from "./ProgressBar/ProgressBar"
@@ -21,25 +21,19 @@ export default class Game extends Component {
   }
 
   componentWillMount(){
-    this.time = Date.now();
-    console.log("Game component will mount");
-    
-    this.props.firebase.auth().onAuthStateChanged( user=> {
-      if(!user) return console.log("Game.js: Failed to initialize game, user is null");
-      if(this.listenersSet) return console.log("Listeners already set");
+    this.props.initFirebase(this.initialized.bind(this));
+  }
 
-      this.setState({uid: user.uid});
-      this.uid = user.uid;
+  initialized(user){
+    this.setState({uid: user.uid});
+    this.uid = user.uid;
 
-      this.roomRef = this.props.db.ref("rooms/"+this.state.room);
-      this.roomRef.child("ops").on("value", ss=> this.onOptionValue(ss.val()));
-      this.roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
-      this.roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
-      this.roomRef.child("timestamp").on("value", ss=> this.setState({tstamp: ss.val()}) );
-      this.roomRef.child("active").on("value", ss=> this.setState({active: ss.val()}) );
-
-      this.listenersSet = true;
-    });
+    this.roomRef = this.props.db.ref("rooms/"+this.state.room);
+    this.roomRef.child("ops").on("value", ss=> this.onOptionValue(ss.val()));
+    this.roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
+    this.roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
+    this.roomRef.child("timestamp").on("value", ss=> this.setState({tstamp: ss.val()}) );
+    this.roomRef.child("active").on("value", ss=> this.setState({active: ss.val()}) );
   }
 
   componentWillUnmount(){
@@ -60,36 +54,34 @@ export default class Game extends Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
-        <View style={styles.container}>
-          <GameButton
-            option={this.state.op1} 
-            votes={this.state.op1votes} 
-            percentage={this.getPercentage(this.state.op1votes)}
-            voted={this.state.voted}
+      <View style={styles.container}>
+        <GameButton
+          option={this.state.op1} 
+          votes={this.state.op1votes} 
+          percentage={this.getPercentage(this.state.op1votes)}
+          voted={this.state.voted}
+          active={this.state.active}
+          chosen={this.state.chosen === "op1"}
+          onPress={()=> this.vote("op1", this.state.op1votes)} 
+          backgroundColor={"#EC644B"}
+          underlayColor={"#c0392b"}
+          maxCharsAfterVoting={100} />
+
+        <ProgressBar timestamp={this.state.tstamp || 0}/>
+
+        <GameButton 
+            option={this.state.op2} 
+            votes={this.state.op2votes} 
+            percentage={this.getPercentage(this.state.op2votes)}
+            voted={this.state.voted} 
             active={this.state.active}
-            chosen={this.state.chosen === "op1"}
-            onPress={()=> this.vote("op1", this.state.op1votes)} 
-            backgroundColor={"#EC644B"}
-            underlayColor={"#c0392b"}
+            chosen={this.state.chosen === "op2"}
+            onPress={()=> this.vote("op2", this.state.op2votes)}
+            backgroundColor={"#27ae60"}
+            underlayColor={"#1E824C"}
             maxCharsAfterVoting={100} />
 
-          <ProgressBar timestamp={this.state.tstamp || 0}/>
-
-          <GameButton 
-              option={this.state.op2} 
-              votes={this.state.op2votes} 
-              percentage={this.getPercentage(this.state.op2votes)}
-              voted={this.state.voted} 
-              active={this.state.active}
-              chosen={this.state.chosen === "op2"}
-              onPress={()=> this.vote("op2", this.state.op2votes)}
-              backgroundColor={"#27ae60"}
-              underlayColor={"#1E824C"}
-              maxCharsAfterVoting={100} />
-
-        </View>
-      </TouchableWithoutFeedback>
+      </View>
     );
   }
 
@@ -149,9 +141,8 @@ export default class Game extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get('window').width,
-    height: (Dimensions.get('window').height - 60) / 2.4,
-    paddingVertical: 8
+    height: 264,
+    paddingVertical: 8,
   },
 
 });

@@ -11,15 +11,15 @@ module.exports = firebase;
 
 
 let initial = true;
-firebase.auth().onAuthStateChanged( user=> {
-	console.log("Auth state changed");
-	 user && signedin();
-	!user && initial && signin();
-	initial = false;
+const listener = firebase.auth().onAuthStateChanged( user=> {
+  !user && initial && signin();
+  initial = false;
 });
 
 const signin = ()=>{
+  console.log("Signing in...");
   firebase.auth().signInAnonymously()
+  .then( signedin )
   .catch( e=> {
     console.log("Error signing in anonymously: "+e.code+" -> "+e.message);
     //Show alert here

@@ -131,21 +131,24 @@ export default class PostView extends Component {
     return (
       <View style={styles.container}>
 
-        <GameButton inactive={true}
-            option={this.state.op1} 
-            backgroundColor={"#2C3E50"}
-            underlayColor={"#2C3E50"}
-            textColor={"white"} />
+        <View style={styles.buttonsHolder}>
+          <GameButton inactive={true}
+              option={this.state.op1} 
+              backgroundColor={"#2C3E50"}
+              underlayColor={"#2C3E50"}
+              textColor={"white"} />
 
-        <View style={styles.middleView} />
+          <View style={styles.middleView} />
 
-        <GameButton inactive={true}
-            option={this.state.op2} 
-            backgroundColor={"#2C3E50"}
-            underlayColor={"#2C3E50"}
-            textColor={"white"} />
+          <GameButton inactive={true}
+              option={this.state.op2} 
+              backgroundColor={"#2C3E50"}
+              underlayColor={"#2C3E50"}
+              textColor={"white"} />
+        </View>
 
         <Arrows
+            new={this.props.new}
             index={this.state.index}
             leftActive={this.state.index > 0}
             rightActive={this.state.index < this.posts.length-1}
@@ -190,13 +193,16 @@ export default class PostView extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get('window').height - 120,
-    backgroundColor: "#34495e",
-    //backgroundColor: "white",
+    flex: 1,
+  },
+
+  buttonsHolder: {
+    height: 264,
+    paddingVertical: 8,
   },
 
   middleView: {
-    padding: 12,
+    padding: 13,
   },
 
 });

@@ -28,6 +28,8 @@ export default class Rather extends Component {
     let listener = Firebase.auth().onAuthStateChanged( user=>{
       if(initialized) return console.log("Already initialized, dismissing");
       initialized = true;
+      listener();
+      
       user ? cb(user) : console.log("Firebase init failed, user was null in onAuthStateChanged");
     });
   }
@@ -38,6 +40,7 @@ export default class Rather extends Component {
       let listener = Firebase.auth().onAuthStateChanged( user=>{
         if(initialized) return console.log("Already initialized, dismissing");
         initialized = true;
+        listener();
 
         if(user) return resolve(user);
         console.log("Firebase init failed, user was null in onAuthStateChanged");
