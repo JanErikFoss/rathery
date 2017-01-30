@@ -12,7 +12,8 @@ export default class Composer extends React.Component {
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
         multiline={this.props.multiline && false}
-        onChange={(e) => {
+        maxLength={140}
+        onChange={e => {
           this.props.onChange(e);
         }}
         style={[styles.textInput, this.props.textInputStyle, {
