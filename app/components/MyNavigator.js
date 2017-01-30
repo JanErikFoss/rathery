@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Navigator, Text, TouchableHighlight, Image, Platform } from 'react-native';
+import { StyleSheet, View, Navigator, Text, TouchableHighlight, Image, Platform, Keyboard } from 'react-native';
 
 import Lobby from "./Lobby"
 import Shop from "./Shop/Shop"
@@ -105,7 +105,12 @@ export default class MyNavigator extends Component {
 
   getButton({image, onPress}){
     return(
-      <TouchableHighlight onPress={onPress} underlayColor={"transparent"} style={styles.buttonHighlight}>
+      <TouchableHighlight style={styles.buttonHighlight}
+          underlayColor={"transparent"}
+          onPress={()=>{
+            Keyboard.dismiss();
+            onPress && onPress();
+          }}>
         <Image source={image} style={styles.buttonImage} />
       </TouchableHighlight>
     );
