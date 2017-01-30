@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Image, Text, Dimensions, TextInput, KeyboardAvoidingView, TouchableHighlight, Alert } from 'react-native';
+import { StyleSheet, View, Image, Text, Dimensions, TextInput, KeyboardAvoidingView, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import EndButtons from "../EndButtons/EndButtons"
 
@@ -13,6 +13,8 @@ export default class PostView extends Component {
       maxLength: this.props.maxLength || 140,
       room: this.props.room || "main",
     };
+
+    props.onFinishPressedRef(this.onFinish.bind(this));
   }
 
   componentDidMount(){
@@ -26,46 +28,39 @@ export default class PostView extends Component {
     return (
       <View style={styles.container}>
 
-        <View style={styles.inputsHolder}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inputsHolder}>
 
-          <TextInput style={[styles.input, styles.op1]}
-            value={this.state.op1}
-            onChangeText={this.textChanged1.bind(this)}
-            multiline={true}
-            placeholder={"Live on a space station for a year"} />
+            <TextInput style={[styles.input, styles.op1]}
+              value={this.state.op1}
+              onChangeText={this.textChanged1.bind(this)}
+              multiline={true}
+              maxLength={this.state.maxLength}
+              placeholder={"Live on a space station for a year"} />
 
-          <Text style={styles.middleText}>
-            or would you...
-          </Text>
+            <Text style={styles.middleText}>
+              or would you...
+            </Text>
 
-          <TextInput style={[styles.input, styles.op2]}
-            value={this.state.op2}
-            onChangeText={this.textChanged2.bind(this)}
-            multiline={true}
-            placeholder={"Live in a submarine for a year"} />
+            <TextInput style={[styles.input, styles.op2]}
+              value={this.state.op2}
+              onChangeText={this.textChanged2.bind(this)}
+              multiline={true}
+              maxLength={this.state.maxLength}
+              placeholder={"Live in a submarine for a year"} />
 
-        </View>
-
-        <KeyboardAvoidingView 
-          style={styles.avoidingView} 
-          behavior={"padding"}>
-
-          <TouchableHighlight style={styles.highlight}
-            onPress={this.onFinish.bind(this)} underlayColor={"transparent"}>
-            <Image source={require("../../images/forward.png")} style={styles.image}/>
-          </TouchableHighlight>
-
-        </KeyboardAvoidingView>
+          </View>
+        </TouchableWithoutFeedback>
 
       </View>
     );
   }
 
   textChanged1(text){
-    this.setState({op1: text.substring(0, this.state.maxLength)})
+    this.setState({op1: text})
   }
   textChanged2(text){
-    this.setState({op2: text.substring(0, this.state.maxLength)})
+    this.setState({op2: text})
   }
 
   onFinish(){
@@ -120,20 +115,5 @@ const styles = StyleSheet.create({
   },
   op1: {},
   op2: {},
-
-  avoidingView: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-  highlight: {
-    flex: 1,
-    alignItems: "center",
-    padding: 5,
-  },
-  image: {
-    height: 50,
-    width: 50,
-  }
 
 });

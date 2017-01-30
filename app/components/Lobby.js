@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TouchableHighlight, Keyboard, Platform, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, TouchableHighlight, Keyboard, Platform } from 'react-native';
 
 import Game from "./Game/Game"
 import Chat from "./Chat/Chat"
@@ -9,9 +9,7 @@ export default class Lobby extends Component {
     return (
       <View style={styles.container}>
 
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
-          <Game {...this.props} />
-        </TouchableWithoutFeedback>
+        <Game {...this.props} />
         <Chat {...this.props} dismissOnSend={true} />
 
       </View>

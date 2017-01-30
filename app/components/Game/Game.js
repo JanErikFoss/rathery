@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Dimensions, Keyboard, Alert } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Keyboard, Alert, TouchableWithoutFeedback } from 'react-native';
 
 import GameButton from "./GameButton"
 import ProgressBar from "./ProgressBar/ProgressBar"
@@ -54,34 +54,36 @@ export default class Game extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <GameButton
-          option={this.state.op1} 
-          votes={this.state.op1votes} 
-          percentage={this.getPercentage(this.state.op1votes)}
-          voted={this.state.voted}
-          active={this.state.active}
-          chosen={this.state.chosen === "op1"}
-          onPress={()=> this.vote("op1", this.state.op1votes)} 
-          backgroundColor={"#EC644B"}
-          underlayColor={"#c0392b"}
-          maxCharsAfterVoting={100} />
-
-        <ProgressBar timestamp={this.state.tstamp || 0}/>
-
-        <GameButton 
-            option={this.state.op2} 
-            votes={this.state.op2votes} 
-            percentage={this.getPercentage(this.state.op2votes)}
-            voted={this.state.voted} 
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
+        <View style={styles.container}>
+          <GameButton
+            option={this.state.op1} 
+            votes={this.state.op1votes} 
+            percentage={this.getPercentage(this.state.op1votes)}
+            voted={this.state.voted}
             active={this.state.active}
-            chosen={this.state.chosen === "op2"}
-            onPress={()=> this.vote("op2", this.state.op2votes)}
-            backgroundColor={"#27ae60"}
-            underlayColor={"#1E824C"}
+            chosen={this.state.chosen === "op1"}
+            onPress={()=> this.vote("op1", this.state.op1votes)} 
+            backgroundColor={"#EC644B"}
+            underlayColor={"#c0392b"}
             maxCharsAfterVoting={100} />
 
-      </View>
+          <ProgressBar timestamp={this.state.tstamp || 0}/>
+
+          <GameButton 
+              option={this.state.op2} 
+              votes={this.state.op2votes} 
+              percentage={this.getPercentage(this.state.op2votes)}
+              voted={this.state.voted} 
+              active={this.state.active}
+              chosen={this.state.chosen === "op2"}
+              onPress={()=> this.vote("op2", this.state.op2votes)}
+              backgroundColor={"#27ae60"}
+              underlayColor={"#1E824C"}
+              maxCharsAfterVoting={100} />
+
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 
