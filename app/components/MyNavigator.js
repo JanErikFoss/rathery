@@ -19,7 +19,7 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
-          onPress: ()=> nav.jumpTo(this.routes[ route.index+1 ]),
+          onPress: ()=> nav.jumpTo(this.routes[ index+1 ]),
         }),
         right: ()=> null,
       },
@@ -32,11 +32,11 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/cash.png"), 
-          onPress: ()=> nav.jumpTo(this.routes[ route.index-1 ])
+          onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/ladder.png"), 
-          onPress: ()=> nav.jumpTo(this.routes[ route.index+1 ])
+          onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
       },
 
@@ -50,11 +50,11 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
-          onPress: ()=> nav.jumpTo(this.routes[ route.index-1 ])
+          onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/write.png"), 
-          onPress: ()=> nav.jumpTo(this.routes[ route.index+1 ])
+          onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
       },
 
@@ -67,7 +67,7 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
-          onPress: ()=> nav.jumpTo(this.routes[ route.index-1 ])
+          onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/checkmark.png"), 
