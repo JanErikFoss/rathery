@@ -9,7 +9,7 @@ export default class Game extends Component {
             onPress={this.props.onPress} underlayColor={this.props.underlayColor || "transparent"}>
           <View style={styles.innerContainer}>
             <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}
-                ellipsizeMode={"clip"}
+                ellipsizeMode={"tail"}
                 numberOfLines={4} >
               {this.getOptionText()}
             </Text>
