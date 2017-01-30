@@ -55,7 +55,7 @@ export default class Game extends Component {
   render() {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-        <View style={styles.container}>
+        <View style={[styles.container, {height: this.props.height}]}>
           <GameButton
             option={this.state.op1} 
             votes={this.state.op1votes} 
@@ -143,7 +143,6 @@ export default class Game extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: 264,
     paddingVertical: 8,
   },
 

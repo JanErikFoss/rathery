@@ -131,7 +131,7 @@ export default class PostView extends Component {
     return (
       <View style={styles.container}>
 
-        <View style={styles.buttonsHolder}>
+        <View style={[styles.buttonsHolder, {height: this.props.height}]}>
           <GameButton inactive={true}
               option={this.state.op1} 
               backgroundColor={"#2C3E50"}
@@ -197,7 +197,6 @@ const styles = StyleSheet.create({
   },
 
   buttonsHolder: {
-    height: 264,
     paddingVertical: 8,
   },
 

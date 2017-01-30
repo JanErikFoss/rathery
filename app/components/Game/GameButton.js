@@ -8,7 +8,11 @@ export default class Game extends Component {
         <TouchableHighlight style={[styles.touchable, {backgroundColor: this.props.backgroundColor}]}
             onPress={this.props.onPress} underlayColor={this.props.underlayColor || "transparent"}>
           <View style={styles.innerContainer}>
-            <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}>{this.getOptionText()}</Text>
+            <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}
+                ellipsizeMode={"clip"}
+                numberOfLines={4} >
+              {this.getOptionText()}
+            </Text>
             
             {((this.props.voted || !this.props.active) && !this.props.inactive) &&
               <View style={styles.infoTextContainer}>

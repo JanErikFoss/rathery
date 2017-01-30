@@ -26,10 +26,11 @@ export default class PostView extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}
+          behavior={"padding"}>
 
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.inputsHolder}>
+          <View style={[styles.inputsHolder, {height: this.props.height}]}>
 
             <TextInput style={[styles.input, styles.op1]}
               value={this.state.op1}
@@ -52,7 +53,7 @@ export default class PostView extends Component {
           </View>
         </TouchableWithoutFeedback>
 
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 
@@ -98,7 +99,6 @@ const styles = StyleSheet.create({
   },
 
   inputsHolder: {
-    height: 264,
     paddingVertical: 8,
   },
   inputHolders: {
