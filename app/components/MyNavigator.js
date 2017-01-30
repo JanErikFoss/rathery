@@ -10,6 +10,8 @@ export default class MyNavigator extends Component {
 
   componentWillMount(){
 
+    this.initialRouteIndex = 1;
+
     this.routes = [
       {
         index: 0, 
@@ -26,7 +28,7 @@ export default class MyNavigator extends Component {
 
       {
         index: 1, 
-        title: ()=> this.getTitle("$" + this.props.score || 0), 
+        title: ()=> this.getTitle("$" + (this.props.score || 0)), 
         render: (route, nav)=> this.renderScene(( 
           <Lobby {...this.props} {...this.getProps({route, nav})} /> 
         )),
@@ -75,8 +77,6 @@ export default class MyNavigator extends Component {
         }),
       },
 
-
-
     ];
   }
 
@@ -90,7 +90,7 @@ export default class MyNavigator extends Component {
   render() {
     return (
       <Navigator style={styles.nav}
-          initialRoute={this.routes[1]}
+          initialRoute={this.routes[this.initialRouteIndex]}
           initialRouteStack={this.routes}
           renderScene={(route, nav)=> route.render(route, nav)}
           navigationBar={this.renderNavBar()} />
@@ -134,8 +134,8 @@ export default class MyNavigator extends Component {
   getProps({route, nav}){
     return {
       routes: this.routes,
-      route,
-      nav,
+      route: route,
+      navigator: nav,
       height: 240
     };
   }
