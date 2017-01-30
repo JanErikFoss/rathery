@@ -9,10 +9,6 @@ import WritePage from "./Ladder/WritePage"
 export default class MyNavigator extends Component {
 
   componentWillMount(){
-    console.log("Navigator props: ", this.props);
-
-    let ladderTitleRef;
-
     this.routes = [
       {
         index: 0, 
@@ -41,8 +37,8 @@ export default class MyNavigator extends Component {
 
       {
         index: 2, 
-        render: (route, navigator)=> this.renderScene(( <Ladder {...this.props} routes={this.routes} route={route} navigator={navigator} titleRef={ref=> ladderTitleRef = ref} titleChanged={this.forceUpdate.bind(this)}/> )),
-        title: ()=> this.getTitle(ladderTitleRef ? ladderTitleRef() : "Submissions"), 
+        render: (route, navigator)=> this.renderScene(( <Ladder {...this.props} routes={this.routes} route={route} navigator={navigator} titleRef={ref=> this.ladderTitleRef = ref} titleChanged={this.forceUpdate.bind(this)}/> )),
+        title: ()=> this.getTitle(this.ladderTitleRef ? this.ladderTitleRef() : "Submissions"), 
         left: (route, navigator, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
           onPress: ()=> navigator.jumpTo(this.routes[1])
