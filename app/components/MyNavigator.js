@@ -21,7 +21,7 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
-          onPress: ()=> this.next(nav, index)
+          onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         right: ()=> null,
       },
@@ -34,11 +34,11 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/cash.png"), 
-          onPress: ()=> this.back(nav, index)
+          onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/ladder.png"), 
-          onPress: ()=> this.next(nav, index)
+          onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
       },
 
@@ -52,11 +52,11 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
-          onPress: ()=> this.back(nav, index)
+          onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/write.png"), 
-          onPress: ()=> this.next(nav, index)
+          onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
       },
 
@@ -69,7 +69,7 @@ export default class MyNavigator extends Component {
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
-          onPress: ()=> this.back(nav, index)
+          onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/checkmark.png"), 
@@ -78,13 +78,6 @@ export default class MyNavigator extends Component {
       },
 
     ];
-  }
-
-  back(nav, index){
-    nav.jumpTo(this.routes[ index-1 ])
-  }
-  next(nav, index){
-    nav.jumpTo(this.routes[ index+1 ])
   }
 
   render() {

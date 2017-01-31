@@ -13,7 +13,7 @@ export default class Ladder extends Component {
       showNew: this.props.showNew || false //We dont rely on the prop
     };
 
-    this.props.titleRef(()=> this.state.showNew ? "Best submissions" : "New submissions");
+    this.props.titleRef(()=> this.state.showNew ? "New submissions" : "Best submissions");
   }
 
   render() {
@@ -29,8 +29,8 @@ export default class Ladder extends Component {
         <TouchableHighlight style={styles.highlight}
             onPress={this.changeState.bind(this)} underlayColor={"transparent"}>
           <Image source={this.state.showNew
-            ? require("../../images/new.png")
-            : require("../../images/best.png")} style={styles.image}/>
+            ? require("../../images/best.png")
+            : require("../../images/new.png")} style={styles.image}/>
         </TouchableHighlight>
 
       </View>
