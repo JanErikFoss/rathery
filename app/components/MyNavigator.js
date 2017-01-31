@@ -147,6 +147,7 @@ export default class MyNavigator extends Component {
 
 const styles = StyleSheet.create({
   navigator: {
+    backgroundColor: "#34495e"
   },
 
   navBar: {
