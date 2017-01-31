@@ -17,7 +17,7 @@ export default class MyNavigator extends Component {
         index: 0, 
         title: ()=> this.getTitle("$" + (this.props.score || 0)), 
         render: (route, nav)=> this.renderScene(( 
-          <Shop {...this.props} {...this.getProps({route, nav})} /> 
+          <Shop {...this.getProps({route, nav})} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
@@ -30,7 +30,7 @@ export default class MyNavigator extends Component {
         index: 1, 
         title: ()=> this.getTitle("$" + (this.props.score || 0)), 
         render: (route, nav)=> this.renderScene(( 
-          <Lobby {...this.props} {...this.getProps({route, nav})} /> 
+          <Lobby {...this.getProps({route, nav})} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/cash.png"), 
@@ -46,7 +46,7 @@ export default class MyNavigator extends Component {
         index: 2,
         title: ()=> this.getTitle(this.ladderTitleRef ? this.ladderTitleRef() : "Submissions"),  
         render: (route, nav)=> this.renderScene(( 
-          <Ladder {...this.props} {...this.getProps({route, nav})} 
+          <Ladder {...this.getProps({route, nav})} 
             titleRef={ref=> this.ladderTitleRef = ref} 
             titleChanged={this.forceUpdate.bind(this)} /> 
         )),
@@ -64,7 +64,7 @@ export default class MyNavigator extends Component {
         index: 3, 
         title: ()=> this.getTitle("Would you..."), 
         render: (route, nav)=> this.renderScene(( 
-          <WritePage {...this.props} {...this.getProps({route, nav})} 
+          <WritePage {...this.getProps({route, nav})} 
             onFinishPressedRef={ref=> this.onWriteFinishPressed = ref} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
@@ -125,11 +125,13 @@ export default class MyNavigator extends Component {
   }
 
   getProps({route, nav}){
+    console.log("Nav props: " , this.props);
     return {
       routes: this.routes,
       route: route,
       navigator: nav,
-      height: 240
+      height: 240,
+      ...this.props
     };
   }
 
