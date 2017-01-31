@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { AppRegistry } from 'react-native';
 
-import App from "./index.js"
+import App from "./App.js"
 
 export default class Rathery extends Component {
   render() {
