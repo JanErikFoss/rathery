@@ -19,15 +19,7 @@ export default class Chat extends Component {
   }
 
   componentWillMount() {
-    this.props.initFirebase(this.initialized.bind(this));
-  }
-
-  initialized(user){
-    if(!user) return console.log("Chat.js: Failed to initialize game, user is null");
-
-    this.setState({uid: user.uid});
-
-    this.props.db.ref("users/"+user.uid+"/name").once("value")
+    this.props.db.ref("users/"+this.props.user.uid+"/name").once("value")
     .then(ss=> ss.val() && this.setState({name: ss.val()}) )
     .catch(err=> console.log("Failed to get name in Chat.js: ", err) )
 
@@ -61,10 +53,10 @@ export default class Chat extends Component {
           messages={this.state.messages}
           onSend={this.onSend.bind(this)}
           user={{ 
-            _id: this.state.uid,
+            _id: this.props.user.uid,
             name: this.state.name,
-            avatar: 'https://facebook.github.io/react/img/logo_og.png', 
-          }} 
+            avatar: require("../../images/appicon.png"), 
+          }}
           isAnimated={true} 
           renderActions={this.renderCustomActions}
           showNameInsteadOfTime={true}

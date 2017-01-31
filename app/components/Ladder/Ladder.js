@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, Alert, TouchableHighlight, Image } from 'react-native';
 
-import EndButtons from "../EndButtons/EndButtons"
 import PostView from "./PostView"
 import WritePage from "./WritePage"
 

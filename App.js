@@ -1,53 +1,66 @@
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, View, StatusBar } from 'react-native';
+import { AppRegistry, StyleSheet, View, StatusBar, Alert } from 'react-native';
 
-import Firebase from "./app/modules/Firebase";
 import MyNavigator from "./app/components/MyNavigator";
 import ScoreHolder from "./app/components/ScoreHolder";
+import firebase from "./app/modules/Firebase";
+
+import DeviceInfo from "react-native-device-info"
 
 export default class Rather extends Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      user: null
+    };
+  }
+
+  componentWillMount(){
+    let user;
+    this.authorizeUser().then(u=> user = u)
+    .catch(err=>{
+      console.log("Failed to sign in: ", err);
+      Alert.alert("Error: "+err.code, err.message);
+      Promise.reject("Failed to sign in, not setting state");
+    })
+    .then(() => this.setState({user: user}) )
+    .then(() => console.log("User is signed in") )
+    .catch(err=> console.log("Failed to set state after authorizing: ", err) )
+  }
+
+  authorizeUser(){
+    this.email = DeviceInfo.getUniqueID() + "@rathery.no";
+    this.password = "RatheryDefaultPassword1996";
+
+    console.log("Email: " + this.email);
+    console.log("Password: " + this.password);
+
+    return new Promise( (resolve, reject) => {
+      firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+      .catch(err=> err.code === "auth/email-already-in-use" ? this.signIn() : Promise.reject(err) )
+      .then( resolve )
+      .catch( reject )
+    });
+  }
+
+  signIn(){
+    return firebase.auth().signInWithEmailAndPassword(this.email, this.password);
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" /> 
-        <ScoreHolder db={Firebase.database()} firebase={Firebase} initFirebase={this.initFirebase.bind(this)} >
-          <MyNavigator />
-        </ScoreHolder>
+        <StatusBar barStyle="light-content" />
+        {this.state.user &&
+          <ScoreHolder db={firebase.database()} firebase={firebase} user={this.state.user} >
+            <MyNavigator />
+          </ScoreHolder>
+        }
       </View>
     );
   }
 
-  initFirebase(cb){
-    return cb 
-      ? this.initFirebaseWithCallback(cb) 
-      : this.initFirebaseWithPromise();
-  }
-
-  initFirebaseWithCallback(cb){
-    let initialized = false;
-    let listener = Firebase.auth().onAuthStateChanged( user=>{
-      if(initialized) return console.log("Already initialized, dismissing");
-      initialized = true;
-      listener();
-      
-      user ? cb(user) : console.log("Firebase init failed, user was null in onAuthStateChanged");
-    });
-  }
-
-  initFirebaseWithPromise(){
-    let initialized = false;
-    return new Promise( (resolve, reject) => {
-      let listener = Firebase.auth().onAuthStateChanged( user=>{
-        if(initialized) return console.log("Already initialized, dismissing");
-        initialized = true;
-        listener();
-
-        if(user) return resolve(user);
-        console.log("Firebase init failed, user was null in onAuthStateChanged");
-        reject("Firebase init failed, user was null in onAuthStateChanged");
-      });
-    });
-  }
 }
 
 const styles = StyleSheet.create({

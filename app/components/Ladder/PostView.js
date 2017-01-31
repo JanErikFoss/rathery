@@ -25,13 +25,6 @@ export default class PostView extends Component {
   }
 
   componentDidMount(){
-    this.props.initFirebase(this.initialized.bind(this));
-  }
-  
-  initialized(user){
-    if(!user) return console.log("LadderList.js: Failed to initialize, user is null");
-    this.uid = user.uid;
-
     this.loadBatch({limit: this.state.limit})
     .then(()=> this.newPost(this.state.index) )
     .catch( console.log );
@@ -91,7 +84,7 @@ export default class PostView extends Component {
   }
 
   loadVote(post){
-    const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+post.key+"/"+this.uid);
+    const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+post.key+"/"+this.props.user.uid);
     voteRef.once("value")
     .then( ss => {
       post.voted = ss.exists();
@@ -175,7 +168,7 @@ export default class PostView extends Component {
     post.voted = true;
     this.setState({voted: true});
 
-    const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+this.state.key+"/"+this.uid);
+    const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+this.state.key+"/"+this.props.user.uid);
     const laddRef = this.props.db.ref("ladders/"+this.state.room+"/"+this.state.key+"/votes");
 
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )

@@ -125,7 +125,6 @@ export default class MyNavigator extends Component {
   }
 
   getProps({route, nav}){
-    console.log("Nav props: " , this.props);
     return {
       routes: this.routes,
       route: route,

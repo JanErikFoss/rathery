@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image, Text, Dimensions, TextInput, KeyboardAvoidingView, TouchableHighlight, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-import EndButtons from "../EndButtons/EndButtons"
-
 export default class PostView extends Component {
   constructor(props) {
     super(props);
@@ -15,13 +13,6 @@ export default class PostView extends Component {
     };
 
     props.onFinishPressedRef(this.onFinish.bind(this));
-  }
-
-  componentDidMount(){
-    this.props.initFirebase(this.initialized.bind(this));
-  }
-  initialized(user){
-    this.uid = user.uid;
   }
 
   render() {
@@ -71,7 +62,7 @@ export default class PostView extends Component {
       op1: this.state.op1,
       op2: this.state.op2,
       createdAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-      poster: this.uid,
+      poster: this.props.user.uid,
       votes: 0,
     })
     .then(()=> console.log("Finished upload") )

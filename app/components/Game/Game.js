@@ -21,13 +21,6 @@ export default class Game extends Component {
   }
 
   componentWillMount(){
-    this.props.initFirebase(this.initialized.bind(this));
-  }
-
-  initialized(user){
-    this.setState({uid: user.uid});
-    this.uid = user.uid;
-
     this.roomRef = this.props.db.ref("rooms/"+this.state.room);
     this.roomRef.child("ops").on("value", ss=> this.onOptionValue(ss.val()));
     this.roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
@@ -96,7 +89,7 @@ export default class Game extends Component {
     if(!this.state.active) return console.log("Question is inactive");
     console.log("Voting " + op + " with votes: " + votes);
 
-    const  numRef = this.props.db.ref("rooms/"+this.state.room+"/"+op+"votes");
+    const numRef = this.props.db.ref("rooms/"+this.state.room+"/"+op+"votes");
 
     this.saveVoteRecord({op})
     .then( () => numRef.transaction(votes=> votes ? ++votes : 1) )
@@ -110,7 +103,7 @@ export default class Game extends Component {
   }
 
   saveVoteRecord({op}){
-    const ref = this.props.db.ref("votes/"+this.state.room+"/"+this.uid);
+    const ref = this.props.db.ref("votes/"+this.state.room+"/"+this.props.user.uid);
     const vote = {
       timestamp: this.props.firebase.database.ServerValue.TIMESTAMP,
       op: op

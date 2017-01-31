@@ -8,11 +8,7 @@ export default class ScoreHolder extends Component {
   }
 
   componentWillMount(){
-    this.props.initFirebase(this.initialized.bind(this));
-  }
-
-  initialized(user){
-    this.scoreRef = this.props.db.ref("users/"+user.uid+"/score");
+    this.scoreRef = this.props.db.ref("users/"+this.props.user.uid+"/score");
     this.scoreRef.on("value", ss=> this.setState({score: ss.val()}) );
   }
 
