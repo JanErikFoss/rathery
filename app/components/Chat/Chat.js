@@ -14,7 +14,8 @@ export default class Chat extends Component {
       messages: [],
       uid: "loading user id...",
       name: "Some user",
-      maxLength: this.props.maxLength || 80
+      maxLength: this.props.maxLength || 80,
+      room: this.props.room || "main",
     };
   }
 
@@ -23,7 +24,7 @@ export default class Chat extends Component {
     .then(ss=> ss.val() && this.setState({name: ss.val()}) )
     .catch(err=> console.log("Failed to get name in Chat.js: ", err) )
 
-    this.props.db.ref("chats/main").limitToLast(1).on("child_added", ss=>{
+    this.props.db.ref("chats/"+this.state.room).limitToLast(1).on("child_added", ss=>{
       this.setState(prevState => {
         return { messages: GiftedChat.append(prevState.messages, ss.val()) };
       });
@@ -34,13 +35,13 @@ export default class Chat extends Component {
     this.props.dismissOnSend && Keyboard.dismiss();
 
     const message = messages[messages.length - 1];
-    message._id = this.props.db.ref("chats/main").push().key;
+    message._id = this.props.db.ref("chats/"+this.state.room).push().key;
 
     if(!message.text) return console.log("Not sending empty message");
     if(message.text.length > this.state.maxLength) 
       return Alert.alert("Too long", "Max length is "+this.state.maxLength+" characters", [{text: "ok"}]);
 
-    this.props.db.ref("chats/main/"+message._id).set(message)
+    this.props.db.ref("chats/"+this.state.room+"/"+message._id).set(message)
     .then(()=> console.log("Successfully sent message") )
     .catch(err=> console.log("Failed to send message: ", err) );
   }
