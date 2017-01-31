@@ -27,7 +27,7 @@ export default class LadderList extends Component {
 
       const ref = this.props.db.ref("ladders/"+this.props.room);
       const query = this.props.new
-        ? ref.orderByChild("createdAt").limitToLast(this.state.loadMax)
+        ? ref.orderByChild("createdAt").limitToFirst(this.state.loadMax)
         : ref.orderByChild("votes").limitToLast(this.state.loadMax);
 
       this.listener = query.on("child_added", ss=>{

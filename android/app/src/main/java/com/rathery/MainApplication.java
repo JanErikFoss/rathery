@@ -1,4 +1,4 @@
-package com.rather;
+package com.rathery;
 
 import android.app.Application;
 import android.util.Log;
