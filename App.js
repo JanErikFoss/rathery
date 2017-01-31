@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, View, StatusBar, Alert } from 'react-native';
+import { AppRegistry, StyleSheet, View, StatusBar, Alert, ActivityIndicator } from 'react-native';
 
 import MyNavigator from "./app/components/MyNavigator";
 import ScoreHolder from "./app/components/ScoreHolder";
@@ -52,6 +52,11 @@ export default class Rather extends Component {
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
+        {!this.state.user && 
+          <View style={styles.spinnerContainer}>
+            <ActivityIndicator style={styles.spinner} color={"white"}/>
+          </View>
+        }
         {this.state.user &&
           <ScoreHolder db={firebase.database()} firebase={firebase} user={this.state.user} >
             <MyNavigator />
@@ -69,5 +74,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: "#34495e"
   },
+
+  spinnerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  spinner: {
+    height: 60,
+    width: 60,
+  }
 
 });
