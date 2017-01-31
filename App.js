@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, View, StatusBar, Alert, ActivityIndicator } from 'react-native';
+import { AppRegistry, StyleSheet, View, StatusBar, Alert, ActivityIndicator, Text } from 'react-native';
 
 import MyNavigator from "./app/components/MyNavigator";
 import ScoreHolder from "./app/components/ScoreHolder";
@@ -55,6 +55,7 @@ export default class Rather extends Component {
         {!this.state.user && 
           <View style={styles.spinnerContainer}>
             <ActivityIndicator style={styles.spinner} color={"white"}/>
+            <Text style={styles.spinnerText}>Connecting</Text>
           </View>
         }
         {this.state.user &&
@@ -79,6 +80,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  spinnerText: {
+    color: "white",
   },
   spinner: {
     height: 60,
