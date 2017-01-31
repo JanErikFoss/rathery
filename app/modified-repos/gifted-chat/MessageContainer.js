@@ -146,7 +146,7 @@ export default class MessageContainer extends React.Component {
           enableEmptySections={true}
           keyboardShouldPersistTaps={"never"}
           automaticallyAdjustContentInsets={false}
-          initialListSize={20}
+          initialListSize={this.props.messages.length}
           pageSize={20}
 
           dataSource={this.state.dataSource}
