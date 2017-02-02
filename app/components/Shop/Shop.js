@@ -20,30 +20,27 @@ export default class Shop extends Component {
   }
 
   componentWillMount(){
-    this.props.firebase.auth().onAuthStateChanged( user=> {
-      if(!user) return console.log("Shop.js: Failed to initialize game, user is null");
+    this.props.db.ref("shop").once("value", shopSS => {
+      this.rows = [];
 
-      this.uid = user.uid;
+      shopSS.val().forEach( (row, index) => {
+        if(!row) return console.log("Invalid shop item at index " + index);
+        row.index = index;
+        this.rows.push(row);
 
-      this.props.db.ref("shop").once("value", shopSS => {
-        this.rows = [];
+        const ref = this.props.db.ref("users/"+this.props.user.uid+"/inventory/"+row.index);
+        const lis = ref.on("value", 
+          ss => this.boughtStatusChanged({row, bought: ss.val()}), 
+          err=> console.log("users/$uid/inventory/$index value listener failed in Shop.js: ", err) );
+      
+        this.listenerOffs.push( ()=> ref.off("value", lis) );
+      });
 
-        shopSS.val().forEach( (row, index) => {
-          if(!row) return console.log("Invalid shop item at index " + index);
-          row.index = index;
-          this.rows.push(row);
+    }, err=> console.log("Failed to get shop value in Shop.js: ", err) );
+  }
 
-          const ref = this.props.db.ref("users/"+this.uid+"/inventory/"+row.index);
-          const lis = ref.on("value", 
-            ss => this.boughtStatusChanged({row, bought: ss.val()}), 
-            err=> console.log("users/$uid/inventory/$index value listener failed in Shop.js: ", err) );
-        
-          this.listenerOffs.push( ()=> ref.off("value", lis) );
-        });
-
-      }, err=> console.log("Failed to get shop value in Shop.js: ", err) );
-
-    });
+  componentWillReceiveProps(props){
+    console.log("Shop received props: ", props);
   }
 
   componentWillUnmount(){
@@ -60,6 +57,7 @@ export default class Shop extends Component {
   }
 
   render() {
+    console.log("Rendering shop with score: " + this.props.score);
     return (
       <View style={styles.container}>
 
@@ -83,15 +81,14 @@ export default class Shop extends Component {
   }
 
   onPress(row){
-    console.log("Score: " + this.props.score);
     if(row.bought) return console.log("Already bought");
     if(!row.active) return console.log("Row is inactive");
-    if(this.props.score < row.cost) return console.log("Cannot afford that item");
+    if(this.props.score < row.cost) return console.log("Cannot afford that item. Score: "+this.props.score + ", Cost: "+row.cost);
 
     this.changeRow(row, {buying: true});
 
     this.props.db.ref("shopactions").push({
-      uid: this.uid,
+      uid: this.props.user.uid,
       item: row.index
     })
     .then( () => console.log("Shop action successful") )

@@ -12,7 +12,8 @@ export default class PostView extends Component {
       room: this.props.room || "main",
     };
 
-    props.onFinishPressedRef(this.onFinish.bind(this));
+    this.onFinishPressed = this.onFinishPressed.bind(this);
+
   }
 
   render() {
@@ -55,7 +56,7 @@ export default class PostView extends Component {
     this.setState({op2: text})
   }
 
-  onFinish(){
+  onFinishPressed(){ //Called from navigator button
     if(!this.state.op1 || !this.state.op2) return console.log("Missing op");
 
     this.props.db.ref("ladders/"+this.state.room).push({

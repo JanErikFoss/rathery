@@ -36,7 +36,7 @@ export default class PostView extends Component {
 
     const roomRef = this.props.db.ref("ladders/"+this.state.room);
     const query = this.props.new
-      ? roomRef.orderByChild("createdAt").limitToFirst(limit)
+      ? roomRef.orderByChild("createdAt").limitToLast(limit)
       : roomRef.orderByChild("votes").limitToLast(limit);
 
     const posts = [];

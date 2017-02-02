@@ -14,23 +14,29 @@ export default class MyNavigator extends Component {
 
     this.routes = [
       {
-        index: 0, 
+        index: 0,
         title: ()=> this.getTitle("$" + (this.props.score || 0)), 
-        render: (route, nav)=> this.renderScene(( 
-          <Shop {...this.getProps({route, nav})} /> 
-        )),
+        render: (route, nav)=> {
+          console.log("Navigator is rendering shop with score "+this.props.score);
+          return this.renderScene((
+          <Shop ref={r=> this._shop = this._shop || r} {...this.getProps({route, nav})} /> 
+        ))},
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/back.png"), 
+          image: require("../images/back.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
-        right: ()=> null,
+        right: (route, nav, index, navState)=> this.getButton({
+          image: require("../images/transparent.png"),
+          onPress: ()=> null
+        }),
+        getRef: ()=> this._shop
       },
 
       {
-        index: 1, 
+        index: 1,
         title: ()=> this.getTitle("$" + (this.props.score || 0)), 
-        render: (route, nav)=> this.renderScene(( 
-          <Lobby {...this.getProps({route, nav})} /> 
+        render: (route, nav)=> this.renderScene((
+          <Lobby ref={r=> this._lobby = this._lobby || r} {...this.getProps({route, nav})} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/cash.png"), 
@@ -40,14 +46,14 @@ export default class MyNavigator extends Component {
           image: require("../images/ladder.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
+        getRef: ()=> this._lobby
       },
 
       {
         index: 2,
-        title: ()=> this.getTitle(this.ladderTitleRef ? this.ladderTitleRef() : "Submissions"),  
-        render: (route, nav)=> this.renderScene(( 
-          <Ladder {...this.getProps({route, nav})} 
-            titleRef={ref=> this.ladderTitleRef = ref} 
+        title: ()=> this.getTitle(this._ladder ? this._ladder.getTitle() : "Submissions"),  
+        render: (route, nav)=> this.renderScene((
+          <Ladder ref={r=> this._ladder = this._ladder || r} {...this.getProps({route, nav})}
             titleChanged={this.forceUpdate.bind(this)} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
@@ -58,14 +64,14 @@ export default class MyNavigator extends Component {
           image: require("../images/write.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
+        getRef: ()=> this._ladder
       },
 
       {
-        index: 3, 
+        index: 3,
         title: ()=> this.getTitle("Would you..."), 
-        render: (route, nav)=> this.renderScene(( 
-          <WritePage {...this.getProps({route, nav})} 
-            onFinishPressedRef={ref=> this.onWriteFinishPressed = ref} /> 
+        render: (route, nav)=> this.renderScene((
+          <WritePage ref={r=> this._writePage = this._writePage || r} {...this.getProps({route, nav})} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../images/back.png"), 
@@ -73,11 +79,22 @@ export default class MyNavigator extends Component {
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../images/checkmark.png"), 
-          onPress: ()=> this.onWriteFinishPressed && this.onWriteFinishPressed()
+          onPress: ()=> this._writePage && this._writePage.onFinishPressed()
         }),
-      },
+        getRef: ()=> this._writePage
+      }
 
     ];
+  }
+
+  getProps({route, nav}){
+    return {
+      ...this.props,
+      routes: this.routes,
+      route: route,
+      navigator: nav,
+      height: 240
+    };
   }
 
   render() {
@@ -86,6 +103,7 @@ export default class MyNavigator extends Component {
           initialRoute={this.routes[this.initialRouteIndex]}
           initialRouteStack={this.routes}
           renderScene={(route, nav)=> route.render(route, nav)}
+          onWillFocus={(route, nav)=> this.forceUpdate()}
           navigationBar={this.renderNavBar()} />
     );
   }
@@ -122,16 +140,6 @@ export default class MyNavigator extends Component {
         <Text style={{color: "white", fontSize: 20}}>{text}</Text>
       </View>
     );
-  }
-
-  getProps({route, nav}){
-    return {
-      routes: this.routes,
-      route: route,
-      navigator: nav,
-      height: 240,
-      ...this.props
-    };
   }
 
   renderScene(scene){

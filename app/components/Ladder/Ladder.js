@@ -12,7 +12,11 @@ export default class Ladder extends Component {
       showNew: this.props.showNew || false //We dont rely on the prop
     };
 
-    this.props.titleRef(()=> this.state.showNew ? "New submissions" : "Best submissions");
+    this.getTitle = this.getTitle.bind(this);
+  }
+
+  getTitle(){
+    return this.state.showNew ? "New submissions" : "Best submissions";
   }
 
   render() {
