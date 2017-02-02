@@ -30,7 +30,7 @@ export default class MyNavigator extends Component {
           onPress: ()=> null
         }),
         getRef: ()=> this._shop,
-        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
+        shouldUpdateOnFocus: true
       },
 
       {
@@ -48,7 +48,6 @@ export default class MyNavigator extends Component {
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._lobby,
-        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       },
 
       {
@@ -67,7 +66,6 @@ export default class MyNavigator extends Component {
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._ladder,
-        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       },
 
       {
@@ -85,7 +83,6 @@ export default class MyNavigator extends Component {
           onPress: ()=> this._writePage && this._writePage.onFinishPressed()
         }),
         getRef: ()=> this._writePage,
-        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       }
 
     ];
@@ -107,9 +104,9 @@ export default class MyNavigator extends Component {
           initialRoute={this.routes[this.initialRouteIndex]}
           initialRouteStack={this.routes}
           renderScene={(route, nav)=> route.render(route, nav)}
-          onWillFocus={(route, nav)=> this.forceUpdate()}
+          onDidFocus={(route, nav)=> route.shouldUpdateOnFocus && this.forceUpdate()}
           navigationBar={this.renderNavBar()}
-          configureScene={route => route.config()} />
+          configureScene={route => route.config || Navigator.SceneConfigs.HorizontalSwipeJump} />
     );
   }
 
