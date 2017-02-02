@@ -29,7 +29,8 @@ export default class MyNavigator extends Component {
           image: require("../images/transparent.png"),
           onPress: ()=> null
         }),
-        getRef: ()=> this._shop
+        getRef: ()=> this._shop,
+        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       },
 
       {
@@ -46,7 +47,8 @@ export default class MyNavigator extends Component {
           image: require("../images/ladder.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
-        getRef: ()=> this._lobby
+        getRef: ()=> this._lobby,
+        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       },
 
       {
@@ -64,7 +66,8 @@ export default class MyNavigator extends Component {
           image: require("../images/write.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
-        getRef: ()=> this._ladder
+        getRef: ()=> this._ladder,
+        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       },
 
       {
@@ -81,7 +84,8 @@ export default class MyNavigator extends Component {
           image: require("../images/checkmark.png"), 
           onPress: ()=> this._writePage && this._writePage.onFinishPressed()
         }),
-        getRef: ()=> this._writePage
+        getRef: ()=> this._writePage,
+        config: ()=> Navigator.SceneConfigs.HorizontalSwipeJump
       }
 
     ];
@@ -104,7 +108,8 @@ export default class MyNavigator extends Component {
           initialRouteStack={this.routes}
           renderScene={(route, nav)=> route.render(route, nav)}
           onWillFocus={(route, nav)=> this.forceUpdate()}
-          navigationBar={this.renderNavBar()} />
+          navigationBar={this.renderNavBar()}
+          configureScene={route => route.config()} />
     );
   }
 
