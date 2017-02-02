@@ -20,19 +20,31 @@ export default class Chat extends Component {
   }
 
   componentWillMount() {
-    this.props.db.ref("users/"+this.props.user.uid+"/name").once("value")
-    .then(ss=> ss.val() && this.setState({name: ss.val()}) )
-    .catch(err=> console.log("Failed to get name in Chat.js: ", err) )
-
-    this.props.db.ref("chats/"+this.state.room).limitToLast(1).on("child_added", ss=>{
+    this.chatRef = this.props.db.ref("chats/"+this.state.room);
+    this.chatRef.limitToLast(1).on("child_added", ss=>{
       this.setState(prevState => {
         return { messages: GiftedChat.append(prevState.messages, ss.val()) };
       });
     });
+
+    const userRef = this.props.db.ref("users/"+this.props.user.uid);
+
+    this.nickRef = userRef.child("nickname");
+    this.nickRef.on("value", ss=> this.setState({nick: ss.val(), promptVisible: !ss.val()}))
+
+    this.avaRef = userRef.child("avatar");
+    this.avaRef.on("value", ss=> this.setState({avatar: ss.val()}))
+  }
+
+  componentWillUnmount(){
+    this.chatRef && this.chatRef.off();
+    this.nickRef && this.nickRef.off();
+    this.avaRef && this.avaRef.off();
   }
 
   onSend(messages = []) {
     this.props.dismissOnSend && Keyboard.dismiss();
+    if(!this.state.nick) return Alert.alert("Please wait...", "Your username has not loaded yet", [{text: "ok"}]);
 
     const message = messages[messages.length - 1];
     message._id = this.props.db.ref("chats/"+this.state.room).push().key;
@@ -55,11 +67,10 @@ export default class Chat extends Component {
           onSend={this.onSend.bind(this)}
           user={{ 
             _id: this.props.user.uid,
-            name: this.state.name,
-            avatar: require("../../images/appicon.png"), 
+            name: this.state.nick,
+            avatar: this.state.avatar, 
           }}
           isAnimated={true} 
-          renderActions={this.renderCustomActions}
           showNameInsteadOfTime={true}
           forceLeft={false} />
       </View>

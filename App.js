@@ -12,11 +12,14 @@ export default class Rather extends Component {
     super(props);
 
     this.state = {
-      user: null
+      user: null,
+      promptVisible: false,
     };
   }
 
   componentWillMount(){
+    this.showUsernamePrompt();
+
     let user;
     this.authorizeUser().then(u=> user = u)
     .catch(err=>{
@@ -44,8 +47,21 @@ export default class Rather extends Component {
     });
   }
 
+  createUser(){
+    return new Promise( (resolve, reject) => {
+      firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+      .then(()=> this.showUsernamePrompt() )
+      .then( resolve )
+      .catch( reject )
+    });
+  }
+
   signIn(){
     return firebase.auth().signInWithEmailAndPassword(this.email, this.password);
+  }
+
+  showUsernamePrompt(){
+    this.setState({promptVisible: true})
   }
 
   render() {
@@ -65,6 +81,13 @@ export default class Rather extends Component {
         }
       </View>
     );
+  }
+
+  userNamePromptFinished(nick){
+    this.setState({
+      promptVisible: false,
+      nickname: value
+    });
   }
 
 }

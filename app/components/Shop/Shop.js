@@ -87,11 +87,15 @@ export default class Shop extends Component {
 
     this.changeRow(row, {buying: true});
 
+    const avaRef = this.props.db.ref("users/"+this.props.user.uid+"/avatar");
+
     this.props.db.ref("shopactions").push({
       uid: this.props.user.uid,
       item: row.index
     })
     .then( () => console.log("Shop action successful") )
+    .then( () => avaRef.set(row.image) )
+    .then( () => console.log("Successfully set avatar") )
     .catch(err=> console.log("Shop action failed in Shop.js: ", err) );
   }
 

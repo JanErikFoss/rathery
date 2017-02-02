@@ -45,13 +45,28 @@ export default class GiftedAvatar extends React.Component {
     this.avatarColor = colors[sumChars % colors.length];
   }
 
+  getImage(ava){ //Avatar
+    console.log("Getting image with ava: " + ava);
+    switch(ava){
+      case "hat1": return require("../../images/shop/hat1.png");
+      case "hat2": return require("../../images/shop/hat2.png");
+      case "hat3": return require("../../images/shop/hat3.png");
+      case "hat4": return require("../../images/shop/hat4.png");
+      case "hat5": return require("../../images/shop/hat5.png");
+      case "hat6": return require("../../images/shop/hat6.png");
+      case "hat7": return require("../../images/shop/hat7.png");
+      case "hat8": return require("../../images/shop/hat8.png");
+      default: return {uri: ava};
+    }
+  }
+
   renderAvatar() {
     if (typeof this.props.user.avatar === 'function') {
       return this.props.user.avatar();
     } else if (typeof this.props.user.avatar === 'string') {
       return (
         <Image
-          source={{uri: this.props.user.avatar}}
+          source={this.getImage(this.props.user.avatar)}
           style={[defaultStyles.avatarStyle, this.props.avatarStyle]}
         />
       );

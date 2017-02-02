@@ -134,6 +134,10 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 dependencies {
     compile project(':react-native-device-info')
     compile fileTree(dir: "libs", include: ["*.jar"])
