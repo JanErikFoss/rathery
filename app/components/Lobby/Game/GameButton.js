@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight, Image, ActivityIndicator } from 'react-native';
 
 export default class Game extends Component {
   render() {
@@ -8,11 +8,16 @@ export default class Game extends Component {
         <TouchableHighlight style={[styles.touchable, {backgroundColor: this.props.backgroundColor}]}
             onPress={this.props.onPress} underlayColor={this.props.underlayColor || "transparent"}>
           <View style={styles.innerContainer}>
-            <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}
-                ellipsizeMode={"tail"}
-                numberOfLines={4} >
-              {this.getOptionText()}
-            </Text>
+            {!this.props.showSpinner &&
+              <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}
+                  ellipsizeMode={"tail"}
+                  numberOfLines={4} >
+                {this.getOptionText()}
+              </Text> 
+            }
+            {this.props.showSpinner &&
+              <ActivityIndicator style={styles.spinner} color={"white"} size={"small"} />
+            }
             
             {((this.props.voted || !this.props.active) && !this.props.inactive) &&
               <View style={styles.infoTextContainer}>

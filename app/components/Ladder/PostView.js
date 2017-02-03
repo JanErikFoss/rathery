@@ -9,115 +9,57 @@ export default class PostView extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      room: "main",
-      op1: "",
-      op2: "",
-      votes: 0,
+    this.initialState = {
       voted: false,
-      index: this.props.index || 0,
-      limit: this.props.limit || 20
+      votes: null,
+      loadingVotes: true,
+      loadingVoted: true
     };
 
-    this.posts = [];
-    this.listeners = [];
+    this.state = this.initialState;
 
   }
 
   componentDidMount(){
-    this.loadBatch({limit: this.state.limit})
-    .then(()=> this.newPost(this.state.index) )
-    .catch( console.log );
+    this.loadVote(this.props.post);
+    this.setVoteListener(this.props.post);
   }
 
-  loadBatch({limit}){
-    console.log("Loading batch with limit " + limit);
-    this.state.limit !== limit && this.setState({limit});
-
-    const roomRef = this.props.db.ref("ladders/"+this.state.room);
-    const query = this.props.new
-      ? roomRef.orderByChild("createdAt").limitToLast(limit)
-      : roomRef.orderByChild("votes").limitToLast(limit);
-
-    const posts = [];
-
-    return new Promise( (resolve, reject)=>{
-      query.once("value")
-      .then(allSS=> allSS.forEach(ss=>{
-        posts.push({ key: ss.key, ...ss.val() })
-      }))
-      .then(()=> posts.reverse() )
-      .then(()=> this.posts = posts )
-      //.then(()=> console.table(this.posts) )
-      .then( resolve )
-      .catch(err=> reject("Error loading batch: " + err) );
-    });
-  }
-
-  newPost(index = 0){
-    if(this.unmounted) return console.log("Unmounted, disregarding newPost() call in PostView.js")
-    if(index < 0 || index >= this.posts.length) return console.log("Invalid index: " + index);
-    const post = this.posts[index];
-    console.log("Showing post with index " + index);
-
-    !post.voted && this.loadVote(post);
-
-    this.removeListeners();
-    this.setVoteListener(post);
-
-    //console.log("Showing post with index " + index + ": ", post);
-    this.setState({
-      index, 
-      ...post,
-      voted: post.voted,
-      votes: "...",
-      leftActive: index > 0,
-      rightActive: index < this.posts.length-1
-    });
-
-    if(index === this.posts.length-1){
-      this.loadBatch({limit: this.state.limit+20})
-      .then(()=> console.log("Finished loading new batch") )
-      .then( this.forceUpdate.bind(this) )
-      .catch( console.log );
-    }
+  componentWillReceiveProps(props){
+    if(this.state.post && props.post && props.post.key === this.state.post.key) 
+      return console.log("Received new props but same post");
+    this.setState(this.initialState);
+    this.loadVote(props.post);
+    this.setVoteListener(props.post);
   }
 
   loadVote(post){
-    const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+post.key+"/"+this.props.user.uid);
+    this.setState({loadingVoted: true});
+
+    const setVoted = voted=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({voted, loadingVoted: false});
+    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+post.key+"/"+this.props.user.uid);
     voteRef.once("value")
-    .then( ss => {
-      post.voted = ss.exists();
-      this.state.key === post.key && !this.unmounted && this.setState({voted: post.voted});
-    })
+    .then( ss => setVoted(ss.exists()) )
     .catch(err=> console.log("Failed to load vote: ", err) );
   }
 
   setVoteListener(post){
-    const ref = this.props.db.ref("ladders/"+this.state.room+"/"+post.key+"/votes");
-    ref.on("value", ss => {
-      post.votes = ss.val();
-      this.state.key === post.key && !this.unmounted && this.setState({votes: post.votes});
-    }, err=> console.log("Failed to listen for votes value: ", err) );
+    this.removeListener && this.removeListener();
+    this.setState({loadingVotes: true});
 
-    this.listeners.push(()=> ref.off() );
-  }
+    const setVotes = votes=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({votes, loadingVotes: false});
+    const ref = this.props.db.ref("ladders/"+this.props.room+"/"+post.key+"/votes");
+    ref.on("value", 
+      ss => setVotes(ss.val()), 
+      err=> console.log("Failed to listen for votes value: ", err) );
 
-  onBackPressed(){
-    this.newPost(this.state.index-1);
-  }
-  onForwardPressed(){
-    this.newPost(this.state.index+1);
+    this.removeListener = ()=> ref.off();
   }
 
   componentWillUnmount(){
-    this.removeListeners();
+    this.removeListener && this.removeListener();
+    this.removeListener = null;
     this.unmounted = true;
-  }
-
-  removeListeners(){
-    this.listeners.forEach( off => off() );
-    this.listeners = [];
   }
 
   render() {
@@ -126,34 +68,36 @@ export default class PostView extends Component {
 
         <View style={[styles.buttonsHolder, {height: this.props.height}]}>
           <GameButton inactive={true}
-              option={this.state.op1} 
+              option={this.props.post.op1} 
               backgroundColor={"#2C3E50"}
               underlayColor={"#2C3E50"}
-              textColor={"white"} />
+              textColor={"white"}
+              showSpinner={this.props.loading} />
 
           <View style={styles.middleView} />
 
           <GameButton inactive={true}
-              option={this.state.op2} 
+              option={this.props.post.op2} 
               backgroundColor={"#2C3E50"}
               underlayColor={"#2C3E50"}
-              textColor={"white"} />
+              textColor={"white"} 
+              showSpinner={this.props.loading} />
         </View>
 
         <Arrows
             new={this.props.new}
-            index={this.state.index}
-            leftActive={this.state.index > 0}
-            rightActive={this.state.index < this.posts.length-1}
-            onBackPressed={this.onBackPressed.bind(this)}
-            onForwardPressed={this.onForwardPressed.bind(this)} >
+            index={this.props.index}
+            leftActive={this.props.leftActive}
+            rightActive={this.props.rightActive}
+            onBackPressed={this.props.onBackPressed}
+            onForwardPressed={this.props.onForwardPressed} >
 
           <VoteView 
             new={this.props.new}
-            index={this.state.index}
-            voted={this.state.voted}
-            votes={this.state.votes}
-            timestamp={this.state.createdAt}
+            index={this.props.index}
+            voted={this.state.loadingVoted ? false : this.state.voted}
+            votes={this.state.loadingVotes ? "..." : this.state.votes || 0}
+            timestamp={this.props.post.createdAt}
             onPress={this.onVote.bind(this)} />
 
         </Arrows>
@@ -163,13 +107,11 @@ export default class PostView extends Component {
   }
 
   onVote(){
-    if(!this.state.key) return console.log("Invalid key");
-    const post = this.posts.find(post=> post.key === this.state.key);
-    post.voted = true;
+    if(!this.props.post) return console.log("this.props.post is invalid");
     this.setState({voted: true});
 
-    const voteRef = this.props.db.ref("laddervotes/"+this.state.room+"/"+this.state.key+"/"+this.props.user.uid);
-    const laddRef = this.props.db.ref("ladders/"+this.state.room+"/"+this.state.key+"/votes");
+    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+this.props.post.key+"/"+this.props.user.uid);
+    const laddRef = this.props.db.ref("ladders/"+this.props.room+"/"+this.props.post.key+"/votes");
 
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
     .then( () => console.log("Laddervote saved, doing transaction...") )

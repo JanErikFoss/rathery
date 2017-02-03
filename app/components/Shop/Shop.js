@@ -79,7 +79,6 @@ export default class Shop extends Component {
   }
 
   renderRow(row){
-    console.log("Rerendering row "+row.index+" with avatar " + this.state.avatar);
     return (
       <GridItem 
           isCurrentAvatar={row.image && row.image === this.state.avatar}

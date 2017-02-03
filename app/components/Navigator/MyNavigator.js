@@ -12,6 +12,11 @@ export default class MyNavigator extends Component {
 
     this.initialRouteIndex = 1;
 
+    const onWritePageFinishedCallback = ()=> {
+      this._ladder.setState({showNew: true, index: 1});
+      this.forceUpdate();
+    }
+
     this.routes = [
       {
         index: 0,
@@ -63,6 +68,7 @@ export default class MyNavigator extends Component {
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._ladder,
+        onWillFocus: (route, nav)=> route.getRef().reload()
       },
 
       {
@@ -77,7 +83,7 @@ export default class MyNavigator extends Component {
         }),
         right: (route, nav, index, navState)=> this.getButton({
           image: require("../../images/checkmark.png"), 
-          onPress: ()=> this._writePage && this._writePage.onFinishPressed()
+          onPress: ()=> this._writePage && this._writePage.onFinishPressed(onWritePageFinishedCallback)
         }),
         getRef: ()=> this._writePage,
       }
@@ -101,6 +107,8 @@ export default class MyNavigator extends Component {
           initialRoute={this.routes[this.initialRouteIndex]}
           initialRouteStack={this.routes}
           renderScene={(route, nav)=> route.render(route, nav)}
+          onWillFocus={(route, nav)=> route.onWillFocus && route.onWillFocus(route, nav)}
+          onDidFocus={(route, nav)=> route.onDidFocus && route.onDidFocus(route, nav)}
           navigationBar={this.renderNavBar()}
           configureScene={route => route.config || Navigator.SceneConfigs.HorizontalSwipeJump} />
     );

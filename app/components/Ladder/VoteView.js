@@ -18,7 +18,7 @@ export default class PostView extends Component {
 
           {!this.props.new && 
             <Text style={[styles.text, styles.infoText, styles.index]}>
-              #{this.props.index + 1}
+              #{this.props.index}
             </Text> 
           }
           {this.props.new && 
@@ -43,9 +43,7 @@ export default class PostView extends Component {
   }
 
   getTimeAgo(){
-    return this.props.timestamp 
-      ? "Posted " + this.getTime() + " ago"
-      : " ";
+    return this.props.timestamp ? "Posted "+this.getTime()+" ago" : " ";
   }
 
   getTime(){
@@ -92,6 +90,7 @@ const styles = StyleSheet.create({
   },
   index: {
     fontWeight: "normal",
+    fontSize: 20
   },
 
   image: {

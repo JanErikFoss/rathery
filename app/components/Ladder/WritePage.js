@@ -56,7 +56,7 @@ export default class PostView extends Component {
     this.setState({op2: text})
   }
 
-  onFinishPressed(){ //Called from navigator button
+  onFinishPressed(cb){ //Called from navigator button
     if(!this.state.op1 || !this.state.op2) return console.log("Missing op");
 
     this.props.db.ref("ladders/"+this.state.room).push({
@@ -69,6 +69,7 @@ export default class PostView extends Component {
     .then(()=> console.log("Finished upload") )
     //.then(()=> Alert.alert("Done", "Your post has been saved", [{text: "ok", onPress: this.props.onFinished}]) )
     .then(()=> this.setState({op1: "", op2: ""}) )
+    .then(()=> cb && cb() )
     .then(()=> this.props.navigator.jumpTo(this.props.routes[this.props.route.index - 1]) )
     .catch(err=> {
       console.log("Failed to upload: " + err);

@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, Dimensions, ActivityIndicator, TouchableHighlight } from 'react-native';
 
 export default class LadderList extends Component {
-
-  componentWillReceiveProps(props){
-    console.log("GridItem received props: ", props);
-  }
-
   render() {
     return (
       <TouchableHighlight style={styles.touchable}

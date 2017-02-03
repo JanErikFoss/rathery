@@ -11,7 +11,7 @@ export default class PostView extends Component {
           <View style={[styles.innerContainer, {justifyContent: "flex-start"}]}>
             <Image style={[styles.image, styles.back]} source={this.getLeftImage()} />
             <Text style={styles.indexText}>
-              {!this.props.new && this.props.leftActive ? this.props.index + "." : " "}
+              {!this.props.new && this.props.leftActive ? (this.props.index - 1)+"." : " "}
             </Text> 
           </View>
         </TouchableHighlight>
@@ -23,7 +23,7 @@ export default class PostView extends Component {
             style={[styles.highlight, {alignItems: "flex-end"}]}>
           <View style={[styles.innerContainer, {justifyContent: "flex-end"}]}>
             <Text style={styles.indexText}>
-              {!this.props.new && this.props.rightActive ? (this.props.index + 2)+"." : " "}
+              {!this.props.new && this.props.rightActive ? (this.props.index + 1)+"." : " "}
             </Text> 
             <Image style={[styles.image, styles.forward]} source={this.getRightImage()} />
           </View>
