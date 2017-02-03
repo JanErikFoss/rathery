@@ -72,7 +72,7 @@ export default class Game extends Component {
             onPress={()=> this.vote("op1", this.state.op1votes)} 
             backgroundColor={"#EC644B"}
             underlayColor={"#c0392b"}
-            maxCharsAfterVoting={100} />
+            maxCharsAfterVoting={80} />
 
           <ProgressBar timestamp={this.state.tstamp || 0}/>
 
@@ -86,7 +86,7 @@ export default class Game extends Component {
               onPress={()=> this.vote("op2", this.state.op2votes)}
               backgroundColor={"#27ae60"}
               underlayColor={"#1E824C"}
-              maxCharsAfterVoting={100} />
+              maxCharsAfterVoting={80} />
 
         </View>
       </TouchableWithoutFeedback>

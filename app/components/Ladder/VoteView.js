@@ -21,7 +21,7 @@ export default class PostView extends Component {
               #{this.props.index}
             </Text> 
           }
-          {this.props.new && 
+          {this.props.new  &&
           <Text style={[styles.text, styles.infoText, styles.postedBy]}>
             Upvote if you want this polled
           </Text> }
@@ -84,13 +84,14 @@ const styles = StyleSheet.create({
     fontWeight: "100",
     paddingTop: 15,
     color: "silver",
+    fontSize: 15,
   },
   postedBy: {
     textAlign: "center"
   },
   index: {
-    fontWeight: "normal",
-    fontSize: 20
+    fontWeight: "200",
+    fontSize: 15
   },
 
   image: {

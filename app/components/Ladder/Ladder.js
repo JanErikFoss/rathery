@@ -9,8 +9,9 @@ export default class Ladder extends Component {
 
     this.defaultPost = {
       op1: "No posts to show",
-      op2: "",
+      op2: "No posts to show",
       isDefaultPost: true,
+      invalid: true,
     };
 
     this.state = {
@@ -42,51 +43,49 @@ export default class Ladder extends Component {
     .then(()=> this.setState({loading: false}) );
   }
 
-  getNewPost(index){
-    if(this.state.post.isDefaultPost) return console.log("No posts to show");
-    if(this.state.loading) return console.log("Still loading...");
-    if(index <= 0) return console.log("Invalid index: " + index);
-
-    //We need to keep track of the old key to check if we're returned the same row
-    this.defaultPost.key = this.state.post.key;
-
-    const oldIndex = this.state.index, oldPost = this.state.post;
-    this.setState({post: this.defaultPost, index, loading: true});
-
-    this.loadPost(index)
-    .then(post=> post.key === this.state.post.key ? Promise.reject({message: "Same post returned"}) : post )
-    .then(post=> this.setState({post, index: Math.min(this.maxLength, index)}) )
-    .then(()=> console.log("New post loaded and displayed") )
-    .then(()=> this.setState({loading: false}) )
-    .catch(err=> this.errorHandler({err, index, oldIndex, oldPost}) );
-  }
-
-  errorHandler({err, index, oldIndex, oldPost}){
-    console.log("Failed to load post at index " + index + ": " + err.message);
-
-    if(err.message === "Same post returned"){
-      const newIndex = Math.min(this.maxLength, Math.min(oldIndex, index));
-      this.setState({post: oldPost, index: newIndex, loading: false});
-      return;
+  getNewPost(index, ignoreChecks){
+    if(!ignoreChecks){
+      if(this.state.loading) return console.log("Still loading...");
+      if(index <= 0) return console.log("Invalid index: " + index);
     }
 
-    if(err.message === "No posts to show")
-      return index === 1
-        ? this.setState({post: {op1: "No posts available", op2: " "}, voted: false, votes: "..."})
-        : this.setState({post: this.defaultPost, index: 1}, this.reload);
-    
-    this.setState({post: oldPost, index: oldIndex, loading: false});
+    oldPost = this.state.post;
+    this.defaultPost.key = oldPost.key;
+    this.setState({post: this.defaultPost, loading: true});
+
+    const checkSameAsOld = post=> post.key === oldPost.key ? Promise.reject({message: "Same post returned"}) : post;
+    const updateState = post=> this.setState({post, index: Math.min(this.maxLength, index)});
+    const log = ()=> console.log("New post loaded and displayed");
+    const errorHandler = err=> this.errorHandler({err, index, oldPost});
+    const turnOffLoading = ()=> this.setState({loading: false});
+
+    this.loadPost(index)
+    .then( checkSameAsOld )
+    .then( updateState )
+    .then( log )
+    .catch(errorHandler )
+    .then( turnOffLoading );
+  }
+
+  errorHandler({err, index, oldPost}){
+    console.log("Failed to load post at index " + index + ": " + err.message);
+
+    err.message === "Same post returned" && 
+      this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
+
+    err.message === "No posts returned" && 
+      this.setState({index: 1, voted: false});
   }
 
   loadPost(index){
-    console.log("Loading post at index " + index);
+    console.log("Loading post with index " + index);
 
     const roomRef = this.props.db.ref("ladders/"+this.state.room);
     const orderBy = this.state.showNew ? "createdAt" : "votes";
     const query = roomRef.orderByChild(orderBy).limitToLast(index);
 
     const saveLength = ss=> {this.maxLength = ss.numChildren(); return ss;};
-    const checkLength = ss=> ss.numChildren() > 0 ? ss : Promise.reject("No posts to show");
+    const checkLength = ss=> ss.numChildren() > 0 ? ss : Promise.reject({message: "No posts returned"});
 
     const getFirst = ss=>{
       let post;
@@ -97,14 +96,8 @@ export default class Ladder extends Component {
       return post;
     };  
 
-    const printSS = ss=> {
-      ss.forEach(p=> console.log(p.val()));
-      return ss;
-    }
-
     return new Promise( (resolve, reject)=>{
       query.once("value")
-      //.then( printSS )
       .then( saveLength )
       .then( checkLength )
       .then( getFirst )

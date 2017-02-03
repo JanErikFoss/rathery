@@ -11,7 +11,7 @@ export default class Game extends Component {
             {!this.props.showSpinner &&
               <Text style={[styles.text, styles.optionText, {color: this.props.textColor || "white"}]}
                   ellipsizeMode={"tail"}
-                  numberOfLines={4} >
+                  numberOfLines={6} >
                 {this.getOptionText()}
               </Text> 
             }
@@ -41,7 +41,7 @@ export default class Game extends Component {
   }
 
   getShortOption(){
-    const maxChars = this.props.maxCharsAfterVoting || 100;
+    const maxChars = this.props.maxCharsAfterVoting || 80;
     return this.props.option.length > maxChars
       ? this.props.option.substring(0, maxChars) + "..."
       : this.props.option;
@@ -73,10 +73,12 @@ const styles = StyleSheet.create({
   text:{
     color: "white",
     textAlign: "center",
+    borderRadius: 3,
+    backgroundColor: "transparent"
   },
 
   optionText: {
-    fontSize: 13,
+    fontSize: 16,
   },
 
   infoTextContainer: {

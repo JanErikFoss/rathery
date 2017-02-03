@@ -8,7 +8,7 @@ export default class PostView extends Component {
     this.state = {
       op1: "",
       op2: "",
-      maxLength: this.props.maxLength || 140,
+      maxLength: this.props.maxLength || 115,
       room: this.props.room || "main",
     };
 

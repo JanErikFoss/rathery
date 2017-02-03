@@ -21,13 +21,20 @@ export default class PostView extends Component {
   }
 
   componentDidMount(){
+    if(this.props.post && this.props.post.invalid) 
+      return this.setState({loadingVotes: false, loadingVoted: false, voted: false, votes: null});
+
     this.loadVote(this.props.post);
     this.setVoteListener(this.props.post);
   }
 
   componentWillReceiveProps(props){
+    if(props.post && props.post.invalid) 
+      return this.setState({loadingVotes: false, loadingVoted: false, voted: false, votes: null});
+
     if(this.state.post && props.post && props.post.key === this.state.post.key) 
       return console.log("Received new props but same post");
+
     this.setState(this.initialState);
     this.loadVote(props.post);
     this.setVoteListener(props.post);
@@ -107,7 +114,7 @@ export default class PostView extends Component {
   }
 
   onVote(){
-    if(!this.props.post) return console.log("this.props.post is invalid");
+    if(!this.props.post || this.props.post.invalid) return console.log("this.props.post is invalid");
     this.setState({voted: true});
 
     const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+this.props.post.key+"/"+this.props.user.uid);
