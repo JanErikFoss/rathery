@@ -54,16 +54,17 @@ export default class Ladder extends Component {
     this.setState({post: this.defaultPost, index, loading: true});
 
     this.loadPost(index)
-    .then(post=> post.key === this.state.post.key ? Promise.reject("Same post returned") : post )
-    .then(post=> this.setState({post}) )
+    .then(post=> post.key === this.state.post.key ? Promise.reject({message: "Same post returned"}) : post )
+    .then(post=> this.setState({post, index: Math.min(this.maxLength, index)}) )
     .then(()=> console.log("New post loaded and displayed") )
     .then(()=> this.setState({loading: false}) )
     .catch(err=>{
       console.log("Failed to load post at index " + index + ": " + err.message);
 
-      if(err === "Same post returned"){
-        this.setState({post: oldPost, index: oldIndex, loading: false});
-      }else if(err === "No posts to show"){
+      if(err.message === "Same post returned"){
+        const newIndex = Math.min(this.maxLength, Math.min(oldIndex, index));
+        this.setState({post: oldPost, index: newIndex, loading: false});
+      }else if(err.message === "No posts to show"){
         if(index === 1){
           console.log("Index is one, so there really is no posts to show");
           const errPost = {op1: "No posts available", op2: " "};
@@ -85,6 +86,7 @@ export default class Ladder extends Component {
     const orderBy = this.state.showNew ? "createdAt" : "votes";
     const query = roomRef.orderByChild(orderBy).limitToLast(index);
 
+    const saveLength = ss=> {this.maxLength = ss.numChildren(); return ss;};
     const checkLength = ss=> ss.numChildren() > 0 ? ss : Promise.reject("No posts to show");
 
     const getFirst = ss=>{
@@ -104,6 +106,7 @@ export default class Ladder extends Component {
     return new Promise( (resolve, reject)=>{
       query.once("value")
       //.then( printSS )
+      .then( saveLength )
       .then( checkLength )
       .then( getFirst )
       .then( resolve )
@@ -155,7 +158,7 @@ export default class Ladder extends Component {
       return {showNew: !prev.showNew, index: 1, post: this.defaultPost};
     }, ()=>{
       this.props.titleChanged();
-      this.getNewPost(1);
+      this.reload();
     });
   }
 
