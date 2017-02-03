@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Navigator, Text, TouchableHighlight, Image, Platform, Keyboard } from 'react-native';
 
-import Lobby from "./Lobby"
-import Shop from "./Shop/Shop"
-import Ladder from "./Ladder/Ladder"
-import WritePage from "./Ladder/WritePage"
+import Lobby from "../Lobby/Lobby"
+import Shop from "../Shop/Shop"
+import Ladder from "../Ladder/Ladder"
+import WritePage from "../Ladder/WritePage"
 
 export default class MyNavigator extends Component {
 
@@ -15,36 +15,33 @@ export default class MyNavigator extends Component {
     this.routes = [
       {
         index: 0,
-        title: ()=> this.getTitle("$" + (this.props.score || 0)), 
-        render: (route, nav)=> {
-          console.log("Navigator is rendering shop with score "+this.props.score);
-          return this.renderScene((
+        title: ()=> this.getTitle("$" + (this.props.score() || 0)), 
+        render: (route, nav)=> this.renderScene((
           <Shop ref={r=> this._shop = this._shop || r} {...this.getProps({route, nav})} /> 
-        ))},
+        )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/back.png"),
+          image: require("../../images/back.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/transparent.png"),
+          image: require("../../images/transparent.png"),
           onPress: ()=> null
         }),
         getRef: ()=> this._shop,
-        shouldUpdateOnFocus: true
       },
 
       {
         index: 1,
-        title: ()=> this.getTitle("$" + (this.props.score || 0)), 
+        title: ()=> this.getTitle("$" + (this.props.score() || 0)), 
         render: (route, nav)=> this.renderScene((
           <Lobby ref={r=> this._lobby = this._lobby || r} {...this.getProps({route, nav})} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/cash.png"), 
+          image: require("../../images/cash.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/ladder.png"), 
+          image: require("../../images/ladder.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._lobby,
@@ -58,11 +55,11 @@ export default class MyNavigator extends Component {
             titleChanged={this.forceUpdate.bind(this)} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/back.png"), 
+          image: require("../../images/back.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/write.png"), 
+          image: require("../../images/write.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._ladder,
@@ -75,11 +72,11 @@ export default class MyNavigator extends Component {
           <WritePage ref={r=> this._writePage = this._writePage || r} {...this.getProps({route, nav})} /> 
         )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/back.png"), 
+          image: require("../../images/back.png"), 
           onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../images/checkmark.png"), 
+          image: require("../../images/checkmark.png"), 
           onPress: ()=> this._writePage && this._writePage.onFinishPressed()
         }),
         getRef: ()=> this._writePage,
@@ -104,7 +101,6 @@ export default class MyNavigator extends Component {
           initialRoute={this.routes[this.initialRouteIndex]}
           initialRouteStack={this.routes}
           renderScene={(route, nav)=> route.render(route, nav)}
-          onDidFocus={(route, nav)=> route.shouldUpdateOnFocus && this.forceUpdate()}
           navigationBar={this.renderNavBar()}
           configureScene={route => route.config || Navigator.SceneConfigs.HorizontalSwipeJump} />
     );

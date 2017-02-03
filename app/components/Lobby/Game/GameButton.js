@@ -21,7 +21,7 @@ export default class Game extends Component {
               </View>
             }
             {this.props.voted && this.props.chosen &&
-              <Image style={styles.checkmark} source={require("../../images/checkmark.png")} />
+              <Image style={styles.checkmark} source={require("../../../images/checkmark.png")} />
             }
           </View>
         </TouchableHighlight>

@@ -26,7 +26,20 @@ export default class Game extends Component {
     this.roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
     this.roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
     this.roomRef.child("timestamp").on("value", ss=> this.setState({tstamp: ss.val()}) );
-    this.roomRef.child("active").on("value", ss=> this.setState({active: ss.val()}) );
+    this.roomRef.child("active").on("value", ss=> this._activeChanged(ss.val()) );
+  }
+
+  _activeChanged(active){
+    this.setState({active});
+
+    active 
+    && this.state.voted 
+    && this.state.chosen
+    && this.state[this.state.chosen+"votes"] > Math.min(this.state.op1votes, this.state.op2votes)
+    && 
+    this.props.db.ref("users/"+this.props.user.uid+"/score")
+    .transaction(score=> (score||0)+1)
+    .catch(err=> console.log("Failed to update score") );
   }
 
   componentWillUnmount(){

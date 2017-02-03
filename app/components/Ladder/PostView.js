@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableHighlight, Image, Text, Dimensions } from 'react-native';
 
-import GameButton from "../Game/GameButton"
+import GameButton from "../Lobby/Game/GameButton"
 import Arrows from "./Arrows"
 import VoteView from "./VoteView"
 
@@ -11,8 +11,8 @@ export default class PostView extends Component {
 
     this.state = {
       room: "main",
-      op1: "Loading...",
-      op2: "Loading...",
+      op1: "",
+      op2: "",
       votes: 0,
       voted: false,
       index: this.props.index || 0,

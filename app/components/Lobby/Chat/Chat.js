@@ -4,7 +4,7 @@ import { StyleSheet, View, ListView, Text, Dimensions, Keyboard, Platform, Alert
 import ChatItem from "./ChatItem";
 import ChatHeader from "./ChatHeader"
 
-import { GiftedChat, Actions } from '../../modified-repos/gifted-chat';
+import { GiftedChat, Actions } from '../../../modified-repos/gifted-chat';
 
 export default class Chat extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ export default class Chat extends Component {
       messages: [],
       uid: "loading user id...",
       name: "Some user",
-      maxLength: this.props.maxLength || 80,
+      maxLength: this.props.maxLength || 140,
       room: this.props.room || "main",
     };
   }
@@ -30,10 +30,10 @@ export default class Chat extends Component {
     const userRef = this.props.db.ref("users/"+this.props.user.uid);
 
     this.nickRef = userRef.child("nickname");
-    this.nickRef.on("value", ss=> this.setState({nick: ss.val(), promptVisible: !ss.val()}))
+    this.nickRef.on("value", ss=> this.setState({nick: ss.val()}) )
 
     this.avaRef = userRef.child("avatar");
-    this.avaRef.on("value", ss=> this.setState({avatar: ss.val()}))
+    this.avaRef.on("value", ss=> this.setState({avatar: ss.val()}) )
   }
 
   componentWillUnmount(){

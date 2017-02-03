@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { AppRegistry, StyleSheet, View, StatusBar, Alert, ActivityIndicator, Text } from 'react-native';
 
-import MyNavigator from "./app/components/MyNavigator";
-import ScoreHolder from "./app/components/ScoreHolder";
+import MyNavigator from "./app/components/Navigator/MyNavigator";
+import ScoreHolder from "./app/components/Holders/ScoreHolder";
+import NickHolder from "./app/components/Holders/NickHolder";
 import firebase from "./app/modules/Firebase";
 
 import DeviceInfo from "react-native-device-info"
@@ -75,9 +76,11 @@ export default class Rather extends Component {
           </View>
         }
         {this.state.user &&
-          <ScoreHolder db={firebase.database()} firebase={firebase} user={this.state.user} >
-            <MyNavigator />
-          </ScoreHolder>
+          <NickHolder db={firebase.database()} firebase={firebase} user={this.state.user} >
+            <ScoreHolder db={firebase.database()} firebase={firebase} user={this.state.user} >
+              <MyNavigator />
+            </ScoreHolder>
+          </NickHolder>
         }
       </View>
     );

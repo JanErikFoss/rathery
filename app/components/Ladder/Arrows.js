@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableHighlight, Image, Text, Dimensions } from 'react-native';
 
-import GameButton from "../Game/GameButton"
-
 export default class PostView extends Component {
   render() {
     return (

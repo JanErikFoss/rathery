@@ -3,6 +3,10 @@ import { StyleSheet, View, Text, Image, Dimensions, ActivityIndicator, Touchable
 
 export default class LadderList extends Component {
 
+  componentWillReceiveProps(props){
+    console.log("GridItem received props: ", props);
+  }
+
   render() {
     return (
       <TouchableHighlight style={styles.touchable}
@@ -23,12 +27,18 @@ export default class LadderList extends Component {
             <Text style={[styles.text, styles.cost]}>${this.props.data.cost}</Text>
           }
 
+          {this.props.isCurrentAvatar && 
+            <Image style={styles.checkmark} source={require("../../images/checkmark.png")} />
+          }
+
         </View>
       </TouchableHighlight>
     );
   }
 
   onPress(){
+    if(!this.props.data.active) return console.log("Row is inactive");
+
     this.props.onPress 
       ? this.props.onPress(this.props.data)
       : console.log("No onPress prop for GridItem.js");
@@ -60,6 +70,7 @@ export default class LadderList extends Component {
 
 const containerSize = 170;
 const imageSize = 90;
+const checkMarkSize = 15;
 const styles = StyleSheet.create({
   container: {
     borderRadius: 10,
@@ -100,6 +111,14 @@ const styles = StyleSheet.create({
   spinner: {
     width: imageSize,
     height: imageSize
+  },
+
+  checkmark: {
+    position: "absolute",
+    bottom: 5,
+    left: 5,
+    width: checkMarkSize,
+    height: checkMarkSize,
   }
 
 });

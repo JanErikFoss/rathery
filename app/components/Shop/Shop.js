@@ -20,83 +20,92 @@ export default class Shop extends Component {
   }
 
   componentWillMount(){
-    this.props.db.ref("shop").once("value", shopSS => {
-      this.rows = [];
+    this.props.db.ref("shop").once("value")
+    .then( this.shopContentReceived.bind(this) )
+    .catch(err=> console.log("Failed to get shop value in Shop.js: ", err) );
 
-      shopSS.val().forEach( (row, index) => {
-        if(!row) return console.log("Invalid shop item at index " + index);
-        row.index = index;
-        this.rows.push(row);
-
-        const ref = this.props.db.ref("users/"+this.props.user.uid+"/inventory/"+row.index);
-        const lis = ref.on("value", 
-          ss => this.boughtStatusChanged({row, bought: ss.val()}), 
-          err=> console.log("users/$uid/inventory/$index value listener failed in Shop.js: ", err) );
-      
-        this.listenerOffs.push( ()=> ref.off("value", lis) );
-      });
-
-    }, err=> console.log("Failed to get shop value in Shop.js: ", err) );
+    this.avaRef = this.props.db.ref("users/"+this.props.user.uid+"/avatar");
+    this.avaRef.on("value", ss=> this.avatarChanged(ss.val()) )
   }
 
-  componentWillReceiveProps(props){
-    console.log("Shop received props: ", props);
+  avatarChanged(avatar){
+    this.rows = this.rows.map(row=> Object.assign({}, row));
+
+    this.setState({
+      avatar,
+      ds: this.state.ds.cloneWithRows(this.rows)
+    });
   }
 
-  componentWillUnmount(){
-    this.listenerOffs.forEach( off=> off && off() );
-    this.unmounted = true;
+  shopContentReceived(shopSS){
+    this.rows = [];
+
+    shopSS.val().forEach( (row, index) => {
+      if(!row) return console.log("Invalid shop item at index " + index);
+      row.index = index;
+      this.rows.push(row);
+
+      const ref = this.props.db.ref("users/"+this.props.user.uid+"/inventory/"+row.index);
+      const lis = ref.on("value", 
+        ss => this.boughtStatusChanged({row, bought: ss.val()}), 
+        err=> console.log("users/$uid/inventory/$index value listener failed in Shop.js: ", err) );
+    
+      this.listenerOffs.push( ()=> ref.off("value", lis) );
+    });
   }
 
   boughtStatusChanged({row, bought}){
     if(this.unmounted) return console.log("Unmounted, disregarding boughtStatusChanged in Shop.js");
-    //console.log("Index is " + row.index + " and rows is ", this.rows);
     this.rows = this.rows.filter( row=> !row.loading );
 
     this.changeRow(row, {buying: false, bought});
   }
 
+  componentWillUnmount(){
+    this.listenerOffs.forEach( off=> off && off() );
+    this.unmounted = true;
+
+    this.avaRef && this.avaRef.off();
+  }
+
   render() {
-    console.log("Rendering shop with score: " + this.props.score);
     return (
-      <View style={styles.container}>
-
-          <ListView style={styles.listView}
-            contentContainerStyle={styles.listContent}
-            dataSource={this.state.ds}
-            renderRow={this.renderRow.bind(this)}
-            removeClippedSubviews={false}
-          />
-
-      </View>
+      <ListView style={styles.listView}
+        contentContainerStyle={styles.listContent}
+        dataSource={this.state.ds}
+        renderRow={this.renderRow.bind(this)}
+        removeClippedSubviews={false} />
     );
   }
 
   renderRow(row){
+    console.log("Rerendering row "+row.index+" with avatar " + this.state.avatar);
     return (
-      <GridItem
+      <GridItem 
+          isCurrentAvatar={row.image && row.image === this.state.avatar}
           data={row} {...this.props}
-          onPress={this.onPress.bind(this)} />
+          onPress={row=> row.bought ? this.activateAvatar(row) : this.buy(row)} />
     );
   }
 
-  onPress(row){
-    if(row.bought) return console.log("Already bought");
-    if(!row.active) return console.log("Row is inactive");
-    if(this.props.score < row.cost) return console.log("Cannot afford that item. Score: "+this.props.score + ", Cost: "+row.cost);
+  buy(row){
+    if(this.props.score() < row.cost) return console.log("Cannot afford that item. Score: "+this.props.score() + ", Cost: "+row.cost);
 
     this.changeRow(row, {buying: true});
 
-    const avaRef = this.props.db.ref("users/"+this.props.user.uid+"/avatar");
-
     this.props.db.ref("shopactions").push({
       uid: this.props.user.uid,
-      item: row.index
+      index: row.index
     })
     .then( () => console.log("Shop action successful") )
-    .then( () => avaRef.set(row.image) )
-    .then( () => console.log("Successfully set avatar") )
     .catch(err=> console.log("Shop action failed in Shop.js: ", err) );
+  }
+  activateAvatar(row){
+    if(row.image === this.state.avatar) return console.log("Already the active avatar");
+
+    const avaRef = this.props.db.ref("users/"+this.props.user.uid+"/avatar");
+    avaRef.set(row.image).then(()=> console.log("Activated avatar") )
+    .catch(err=> console.log("Failed to activate avatar: ", err) );
   }
 
   changeRow(row, newProps){
@@ -113,14 +122,10 @@ export default class Shop extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#34495e",
-  },
-
   listView: {
     flex: 1,
     paddingTop: 4,
+    backgroundColor: "#34495e",
   },
 
   listContent: {
