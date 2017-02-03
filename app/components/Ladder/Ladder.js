@@ -58,25 +58,24 @@ export default class Ladder extends Component {
     .then(post=> this.setState({post, index: Math.min(this.maxLength, index)}) )
     .then(()=> console.log("New post loaded and displayed") )
     .then(()=> this.setState({loading: false}) )
-    .catch(err=>{
-      console.log("Failed to load post at index " + index + ": " + err.message);
+    .catch(err=> this.errorHandler({err, index, oldIndex, oldPost}) );
+  }
 
-      if(err.message === "Same post returned"){
-        const newIndex = Math.min(this.maxLength, Math.min(oldIndex, index));
-        this.setState({post: oldPost, index: newIndex, loading: false});
-      }else if(err.message === "No posts to show"){
-        if(index === 1){
-          console.log("Index is one, so there really is no posts to show");
-          const errPost = {op1: "No posts available", op2: " "};
-          this.setState({post: errPost, voted: false, votes: "..."});
-        }else{
-          console.log("Setting index to one and reloading");
-          this.setState({post: defaultPost, index: 1}, this.reload);
-        }
-      }else{
-        this.setState({post: oldPost, index: oldIndex, loading: false});
-      }
-    })
+  errorHandler({err, index, oldIndex, oldPost}){
+    console.log("Failed to load post at index " + index + ": " + err.message);
+
+    if(err.message === "Same post returned"){
+      const newIndex = Math.min(this.maxLength, Math.min(oldIndex, index));
+      this.setState({post: oldPost, index: newIndex, loading: false});
+      return;
+    }
+
+    if(err.message === "No posts to show")
+      return index === 1
+        ? this.setState({post: {op1: "No posts available", op2: " "}, voted: false, votes: "..."})
+        : this.setState({post: this.defaultPost, index: 1}, this.reload);
+    
+    this.setState({post: oldPost, index: oldIndex, loading: false});
   }
 
   loadPost(index){
