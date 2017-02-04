@@ -15,7 +15,7 @@ export default class Game extends Component {
       op2votes: 0,
       voted: false,
       active: false,
-      tstamp: 0,
+      timestamp: 0,
       room: "main",
     };
   }
@@ -25,14 +25,14 @@ export default class Game extends Component {
     this.roomRef.child("ops").on("value", ss=> this.onOptionValue(ss.val()));
     this.roomRef.child("op1votes").on("value", ss=> this.setState({op1votes: ss.val()}) );
     this.roomRef.child("op2votes").on("value", ss=> this.setState({op2votes: ss.val()}) );
-    this.roomRef.child("timestamp").on("value", ss=> this.setState({tstamp: ss.val()}) );
+    this.roomRef.child("timestamp").on("value", ss=> this.setState({timestamp: ss.val()}) );
     this.roomRef.child("active").on("value", ss=> this._activeChanged(ss.val()) );
   }
 
   _activeChanged(active){
     this.setState({active});
 
-    active 
+    !active 
     && this.state.voted 
     && this.state.chosen
     && this.state[this.state.chosen+"votes"] > Math.min(this.state.op1votes, this.state.op2votes)
@@ -48,13 +48,11 @@ export default class Game extends Component {
   }
 
   onOptionValue(val){
-    val = val || {};
-
     this.setState({
       voted: false,
       loaded: true,
-      op1: val.op1 || "This is undefined",
-      op2: val.op2 || "This is undefined",
+      op1: val && val.op1 || "This is undefined",
+      op2: val && val.op2 || "This is undefined",
     });
   }
 
@@ -63,18 +61,18 @@ export default class Game extends Component {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
         <View style={[styles.container, {height: this.props.height}]}>
           <GameButton
-            option={this.state.op1} 
-            votes={this.state.op1votes} 
-            percentage={this.getPercentage(this.state.op1votes)}
-            voted={this.state.voted}
-            active={this.state.active}
-            chosen={this.state.chosen === "op1"}
-            onPress={()=> this.vote("op1", this.state.op1votes)} 
-            backgroundColor={"#EC644B"}
-            underlayColor={"#c0392b"}
-            maxCharsAfterVoting={80} />
+              option={this.state.op1} 
+              votes={this.state.op1votes} 
+              percentage={this.getPercentage(this.state.op1votes)}
+              voted={this.state.voted}
+              active={this.state.active}
+              chosen={this.state.chosen === "op1"}
+              onPress={()=> this.vote("op1", this.state.op1votes)} 
+              backgroundColor={"#EC644B"}
+              underlayColor={"#c0392b"}
+              maxCharsAfterVoting={80} />
 
-          <ProgressBar timestamp={this.state.tstamp || 0}/>
+          <ProgressBar timestamp={this.state.timestamp || 0}/>
 
           <GameButton 
               option={this.state.op2} 
