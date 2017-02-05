@@ -16,6 +16,12 @@ export default class Rather extends Component {
       user: null,
       promptVisible: false,
     };
+
+    if(!__DEV__) {
+      console = {};
+      console.log = () => {};
+      console.error = () => {};
+    }
   }
 
   componentWillMount(){
