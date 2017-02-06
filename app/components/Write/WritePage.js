@@ -32,7 +32,7 @@ export default class PostView extends Component {
               placeholder={"Live on a space station for a year"} />
 
             <Text style={styles.middleText}>
-              or would you...
+               
             </Text>
 
             <TextInput style={[styles.input, styles.op2]}

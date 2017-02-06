@@ -34,20 +34,14 @@ export default class Ladder extends Component {
   }
 
   reload(){
-    console.log("Reloading");
-    this.setState({loading: true});
-    this.loadPost(this.state.index)
-    .then(post => this.setState({post}) )
-    .then( ()  => console.log("Post loaded") )
-    .catch( console.log )
-    .then(()=> this.setState({loading: false}) );
+    this.getNewPost({index: this.state.index, ignoreChecks: true});
   }
 
-  getNewPost(index, ignoreChecks){
-    if(!ignoreChecks){
-      if(this.state.loading) return console.log("Still loading...");
-      if(index <= 0) return console.log("Invalid index: " + index);
-    }
+  getNewPost({index, ignoreChecks}){
+    if(!ignoreChecks && this.state.loading)
+      return console.log("Still loading...");
+    if(index <= 0) 
+      return console.log("Invalid index: " + index);
 
     oldPost = this.state.post;
     this.defaultPost.key = oldPost.key;
@@ -64,17 +58,8 @@ export default class Ladder extends Component {
     .then( updateState )
     .then( log )
     .catch(errorHandler )
-    .then( turnOffLoading );
-  }
-
-  errorHandler({err, index, oldPost}){
-    console.log("Failed to load post at index " + index + ": " + err.message);
-
-    err.message === "Same post returned" && 
-      this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
-
-    err.message === "No posts returned" && 
-      this.setState({index: 1, voted: false});
+    .then( turnOffLoading )
+    .catch(err=> console.log("Failed to load post: ", err) );
   }
 
   loadPost(index){
@@ -96,14 +81,20 @@ export default class Ladder extends Component {
       return post;
     };  
 
-    return new Promise( (resolve, reject)=>{
-      query.once("value")
+    return query.once("value")
       .then( saveLength )
       .then( checkLength )
-      .then( getFirst )
-      .then( resolve )
-      .catch( reject );
-    });
+      .then( getFirst );
+  }
+
+  errorHandler({err, index, oldPost}){
+    console.log("Failed to load post at index " + index + ": " + err.message);
+
+    err.message === "Same post returned" && 
+      this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
+
+    err.message === "No posts returned" && 
+      this.setState({index: 1, voted: false});
   }
 
   componentWillUnmount(){
@@ -120,9 +111,9 @@ export default class Ladder extends Component {
       room: this.state.room,
       loading: this.state.loading,
       leftActive: this.state.index > 1,
-      rightActive: true,//this.state.index < this.state.endIndex,
-      onBackPressed: ()=> this.getNewPost(this.state.index-1),
-      onForwardPressed: ()=> this.getNewPost(this.state.index+1),
+      rightActive: true,
+      onBackPressed: ()=> this.getNewPost({index: this.state.index-1}),
+      onForwardPressed: ()=> this.getNewPost({index: this.state.index+1}),
     };
   }
 
@@ -130,7 +121,7 @@ export default class Ladder extends Component {
     return (
       <View style={styles.container}>
 
-        <PostView {...this.getProps()} new={this.state.showNew} />
+        <PostView {...this.getProps()} />
 
         <TouchableHighlight style={styles.highlight}
             onPress={this.changeState.bind(this)} underlayColor={"transparent"}>

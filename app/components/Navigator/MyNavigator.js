@@ -4,7 +4,7 @@ import { StyleSheet, View, Navigator, Text, TouchableHighlight, Image, Platform,
 import Lobby from "../Lobby/Lobby"
 import Shop from "../Shop/Shop"
 import Ladder from "../Ladder/Ladder"
-import WritePage from "../Ladder/WritePage"
+import WritePage from "../Write/WritePage"
 
 export default class MyNavigator extends Component {
 
@@ -73,7 +73,7 @@ export default class MyNavigator extends Component {
 
       {
         index: 3,
-        title: ()=> this.getTitle("Would you..."), 
+        title: ()=> this.getTitle("Write"), 
         render: (route, nav)=> this.renderScene((
           <WritePage ref={r=> this._writePage = this._writePage || r} {...this.getProps({route, nav})} /> 
         )),
@@ -116,13 +116,12 @@ export default class MyNavigator extends Component {
 
   renderNavBar(){
     return(
-      <Navigator.NavigationBar
+      <Navigator.NavigationBar style={styles.navBar}
          routeMapper={{
            LeftButton: (route, nav, index, navState) => route.left(route, nav, index, navState),
            RightButton: (route, nav, index, navState) => route.right(route, nav, index, navState),
            Title: (route, nav, index, navState) => route.title(route, nav, index, navState),
          }}
-         style={styles.navBar}
        />
     );
   }

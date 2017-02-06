@@ -31,7 +31,7 @@ export default class Game extends Component {
 
   _activeChanged(active){
     this.setState({active});
-
+    console.log("Active changed");
     !active 
     && this.state.voted 
     && this.state.chosen
@@ -67,8 +67,8 @@ export default class Game extends Component {
               voted={this.state.voted}
               active={this.state.active}
               chosen={this.state.chosen === "op1"}
-              onPress={()=> this.vote("op1", this.state.op1votes)} 
-              backgroundColor={"#EC644B"}
+              onPress={()=> this.vote("op1", this.state.op1votes)}
+              backgroundColor={this.state.active || !this.min(this.state.op1votes) ? "#EC644B" : "#c0392b"}
               underlayColor={"#c0392b"}
               maxCharsAfterVoting={80} />
 
@@ -82,13 +82,22 @@ export default class Game extends Component {
               active={this.state.active}
               chosen={this.state.chosen === "op2"}
               onPress={()=> this.vote("op2", this.state.op2votes)}
-              backgroundColor={"#27ae60"}
+              backgroundColor={this.getBackgroundColorOp2()}
               underlayColor={"#1E824C"}
               maxCharsAfterVoting={80} />
 
         </View>
       </TouchableWithoutFeedback>
     );
+  }
+
+  getBackgroundColorOp2(){
+    console.log("Getting backgroundcolor for op2");
+    return this.state.active || !this.min(this.state.op2votes) ? "#27ae60" : "#1E824C"
+  }
+
+  min(votes){
+    return votes === Math.min(this.state.op1votes, this.state.op2votes);
   }
 
   getPercentage(votes){
