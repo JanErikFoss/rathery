@@ -43,6 +43,8 @@ export default class Ladder extends Component {
     if(index <= 0) 
       return console.log("Invalid index: " + index);
 
+    console.log("Loading post with index " + index);
+
     oldPost = this.state.post;
     this.defaultPost.key = oldPost.key;
     this.setState({post: this.defaultPost, loading: true});
@@ -63,8 +65,6 @@ export default class Ladder extends Component {
   }
 
   loadPost(index){
-    console.log("Loading post with index " + index);
-
     const roomRef = this.props.db.ref("ladders/"+this.state.room);
     const orderBy = this.state.showNew ? "createdAt" : "votes";
     const query = roomRef.orderByChild(orderBy).limitToLast(index);
@@ -88,13 +88,13 @@ export default class Ladder extends Component {
   }
 
   errorHandler({err, index, oldPost}){
+    if(err.message === "Same post returned")
+      return this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
+
+    if(err.message === "No posts returned")
+      return this.setState({index: 1, voted: false});
+
     console.log("Failed to load post at index " + index + ": " + err.message);
-
-    err.message === "Same post returned" && 
-      this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
-
-    err.message === "No posts returned" && 
-      this.setState({index: 1, voted: false});
   }
 
   componentWillUnmount(){

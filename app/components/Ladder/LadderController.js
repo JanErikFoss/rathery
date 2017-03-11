@@ -60,13 +60,13 @@ export default class LadderController extends Component {
     const getFirst = ss=>{
       let post;
       ss.forEach(p=>{
-        post = {key: p.key, ...p.val()}; 
+        post = {key: p.key, ...p.val()};
         return true;        // return true to break forEach
       });
       return post.key === this.state.post.key
         ? Promise.reject("Same post returned")
         : post;
-    };  
+    };
 
     const printSS = ss=> {
       ss.forEach(p=> console.log(p.val()));

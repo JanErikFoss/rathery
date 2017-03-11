@@ -14,7 +14,6 @@ export default class Rather extends Component {
 
     this.state = {
       user: null,
-      promptVisible: false,
     };
 
     if(!__DEV__) {
@@ -25,8 +24,6 @@ export default class Rather extends Component {
   }
 
   componentWillMount(){
-    this.showUsernamePrompt();
-
     let user;
     this.authorizeUser().then(u=> user = u)
     .catch(err=>{
@@ -67,15 +64,11 @@ export default class Rather extends Component {
     return firebase.auth().signInWithEmailAndPassword(this.email, this.password);
   }
 
-  showUsernamePrompt(){
-    this.setState({promptVisible: true})
-  }
-
   render() {
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-        {!this.state.user && 
+        {!this.state.user &&
           <View style={styles.spinnerContainer}>
             <ActivityIndicator style={styles.spinner} color={"white"}/>
             <Text style={styles.spinnerText}>Connecting</Text>
@@ -90,13 +83,6 @@ export default class Rather extends Component {
         }
       </View>
     );
-  }
-
-  userNamePromptFinished(nick){
-    this.setState({
-      promptVisible: false,
-      nickname: value
-    });
   }
 
 }

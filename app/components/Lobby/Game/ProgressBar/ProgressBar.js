@@ -7,11 +7,17 @@ import Timer from "react-native-timer"
 export default class ProgressBar extends Component {
   constructor(props){
     super(props);
-    this.state = {ts: props.timestamp};
+    this.state = {
+      ts: props.timestamp,
+      interval: props.interval || 60,
+    }
   }
 
   componentWillReceiveProps(props){
-    this.setState({ts: props.timestamp});
+    this.setState({
+      ts: props.timestamp,
+      interval: props.interval || 60,
+    })
   }
 
   componentDidMount(){
@@ -20,10 +26,10 @@ export default class ProgressBar extends Component {
   }
 
   getProgress(){
-    const prog = (Date.now()-this.state.ts) / 20000;
+    const prog = (Date.now()-this.state.ts) / ((this.state.interval * 0.67) * 1000)
     return prog < 1
       ? 1-prog
-      : 2*(prog-1);
+      : 2*(prog-1)
   }
 
   componentWillUnmount(){

@@ -21,7 +21,7 @@ export default class PostView extends Component {
   }
 
   componentDidMount(){
-    if(this.props.post && this.props.post.invalid) 
+    if(this.props.post && this.props.post.invalid)
       return this.setState({loadingVotes: false, loadingVoted: false, voted: false, votes: null});
 
     this.loadVote(this.props.post);
@@ -29,10 +29,10 @@ export default class PostView extends Component {
   }
 
   componentWillReceiveProps(props){
-    if(props.post && props.post.invalid) 
+    if(props.post && props.post.invalid)
       return this.setState({loadingVotes: false, loadingVoted: false, voted: false, votes: null});
 
-    if(this.state.post && props.post && props.post.key === this.state.post.key) 
+    if(this.state.post && props.post && props.post.key === this.state.post.key)
       return console.log("Received new props but same post");
 
     this.setState(this.initialState);
@@ -43,30 +43,30 @@ export default class PostView extends Component {
   loadVote(post){
     this.setState({loadingVoted: true});
 
-    const setVoted = voted=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({voted, loadingVoted: false});
-    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+post.key+"/"+this.props.user.uid);
+    const setVoted = voted => !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({voted, loadingVoted: false})
+    const voteRef = this.props.db.ref("laddervoters/"+this.props.room+"/"+post.key+"/"+this.props.user.uid)
     voteRef.once("value")
     .then( ss => setVoted(ss.exists()) )
-    .catch(err=> console.log("Failed to load vote: ", err) );
+    .catch(err => console.log("Failed to load vote: ", err))
   }
 
   setVoteListener(post){
     this.removeListener && this.removeListener();
     this.setState({loadingVotes: true});
 
-    const setVotes = votes=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({votes, loadingVotes: false});
-    const ref = this.props.db.ref("ladders/"+this.props.room+"/"+post.key+"/votes");
-    ref.on("value", 
-      ss => setVotes(ss.val()), 
-      err=> console.log("Failed to listen for votes value: ", err) );
+    const setVotes = votes=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({votes, loadingVotes: false})
+    const ref = this.props.db.ref("laddervotes/"+this.props.room+"/"+post.key)
+    ref.on("value",
+      ss => setVotes(ss.val()),
+      err => console.log("Failed to listen for votes value: ", err))
 
     this.removeListener = ()=> ref.off();
   }
 
   componentWillUnmount(){
-    this.removeListener && this.removeListener();
-    this.removeListener = null;
-    this.unmounted = true;
+    this.removeListener && this.removeListener()
+    this.removeListener = null
+    this.unmounted = true
   }
 
   render() {
@@ -75,7 +75,7 @@ export default class PostView extends Component {
 
         <View style={[styles.buttonsHolder, {height: this.props.height}]}>
           <GameButton inactive={true}
-              option={this.props.post.op1} 
+              option={this.props.post.op1}
               backgroundColor={"#2C3E50"}
               underlayColor={"#2C3E50"}
               textColor={"white"}
@@ -84,10 +84,10 @@ export default class PostView extends Component {
           <View style={styles.middleView} />
 
           <GameButton inactive={true}
-              option={this.props.post.op2} 
+              option={this.props.post.op2}
               backgroundColor={"#2C3E50"}
               underlayColor={"#2C3E50"}
-              textColor={"white"} 
+              textColor={"white"}
               showSpinner={this.props.loading} />
         </View>
 
@@ -99,7 +99,7 @@ export default class PostView extends Component {
             onBackPressed={this.props.onBackPressed}
             onForwardPressed={this.props.onForwardPressed} >
 
-          <VoteView 
+          <VoteView
             new={this.props.new}
             index={this.props.index}
             voted={this.state.loadingVoted ? false : this.state.voted}
@@ -114,21 +114,16 @@ export default class PostView extends Component {
   }
 
   onVote(){
-    if(!this.props.post || this.props.post.invalid) return console.log("this.props.post is invalid");
-    this.setState({voted: true});
+    if(!this.props.post || this.props.post.invalid)
+      return console.log("this.props.post is invalid")
+    this.setState({ voted: true })
 
-    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+this.props.post.key+"/"+this.props.user.uid);
-    const laddRef = this.props.db.ref("ladders/"+this.props.room+"/"+this.props.post.key+"/votes");
-
+    const voteRef = this.props.db.ref("laddervoters/"+this.props.room+"/"+this.props.post.key+"/"+this.props.user.uid)
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
-    .then( () => console.log("Laddervote saved, doing transaction...") )
-    .then( () => laddRef.transaction(votes=> votes ? ++votes : 1) )
-    .then( () => console.log("Successfully voted") )
-    .catch(err=>{
-      console.log("Failed to vote: ", err);
-      post.voted = false;
-      this.setState({voted: false});
-    });
+    .catch(err => {
+      console.log("Failed to vote: ", err)
+      this.setState({ voted: false })
+    })
   }
 
 }

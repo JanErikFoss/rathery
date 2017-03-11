@@ -46,10 +46,10 @@ export default class Shop extends Component {
       this.rows.push(row);
 
       const ref = this.props.db.ref("users/"+this.props.user.uid+"/inventory/"+row.index);
-      const lis = ref.on("value", 
-        ss => this.boughtStatusChanged({row, bought: ss.val()}), 
+      const lis = ref.on("value",
+        ss => this.boughtStatusChanged({row, bought: ss.val()}),
         err=> console.log("users/$uid/inventory/$index value listener failed in Shop.js: ", err) );
-    
+
       this.listenerOffs.push( ()=> ref.off("value", lis) );
     });
   }
@@ -80,7 +80,7 @@ export default class Shop extends Component {
 
   renderRow(row){
     return (
-      <GridItem 
+      <GridItem
           isCurrentAvatar={row.image && row.image === this.state.avatar}
           data={row} {...this.props}
           onPress={row=> row.bought ? this.activateAvatar(row) : this.buy(row)} />
@@ -90,14 +90,18 @@ export default class Shop extends Component {
   buy(row){
     if(this.props.score() < row.cost) return console.log("Cannot afford that item. Score: "+this.props.score() + ", Cost: "+row.cost);
 
-    this.changeRow(row, {buying: true});
+    this.changeRow(row, { buying: true })
 
-    this.props.db.ref("shopactions").push({
+    const key = this.props.db.ref("shopactions").push().key
+
+    this.props.db.ref("shopactions/"+key).set({
       uid: this.props.user.uid,
       index: row.index
     })
-    .then( () => console.log("Shop action successful") )
-    .catch(err=> console.log("Shop action failed in Shop.js: ", err) );
+    .catch(err => {
+      console.log("Failed to save shopaction: ", err)
+      this.changeRow(row, { buying: false })
+    })
   }
   activateAvatar(row){
     if(row.image === this.state.avatar) return console.log("Already the active avatar");
@@ -112,10 +116,10 @@ export default class Shop extends Component {
     if(!row) return console.log("Failed to change row, row was invalid");
     if(!newProps) return console.log("Failed to change row, newProps was invalid");
     this.rows = [...this.rows];                               //Copy this.rows to maintain immutability
-    this.rows[row.index-1] = Object.assign({}, row, newProps);//Assign props in immutable way
+    this.rows[row.index-1] = Object.assign({}, row, newProps) //Assign props in immutable way
     this.setState(prev => {                                   //Set new state
-      return {ds: prev.ds.cloneWithRows(this.rows)};
-    });
+      return { ds: prev.ds.cloneWithRows(this.rows) }
+    })
   }
 
 }
