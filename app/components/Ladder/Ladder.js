@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
   highlight: {
     padding: 5,
     alignItems: "center",
+    backgroundColor: "#2C3E50",
   },
   image: {
     height: imageSize,

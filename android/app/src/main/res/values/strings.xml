@@ -1,1 +1,4 @@
-<resources>    <string name="app_name">Rathery</string></resources>
+<resources>
+  <string name="app_name">Rathery</string>
+  <string name="reactNativeCodePush_androidDeploymentKey">lT_MC7S13jGtw0fNzLLpYiSB3SPGVyCzJuR9f</string>
+</resources>

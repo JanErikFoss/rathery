@@ -14,14 +14,15 @@ export default class Chat extends Component {
       messages: [],
       uid: "loading user id...",
       name: "Some user",
-      maxLength: this.props.maxLength || 140,
-      room: this.props.room || "main",
+      maxLength: props.maxLength || 140,
+      room: props.room || "main",
+      initialMessageCount: props.initialMessageCount || 10
     };
   }
 
   componentWillMount() {
     this.chatRef = this.props.db.ref("chats/"+this.state.room);
-    this.chatRef.limitToLast(1).on("child_added", ss=>{
+    this.chatRef.limitToLast(this.state.initialMessageCount).on("child_added", ss=>{
       this.setState(prevState => {
         return { messages: GiftedChat.append(prevState.messages, ss.val()) };
       });
@@ -50,7 +51,7 @@ export default class Chat extends Component {
     message._id = this.props.db.ref("chats/"+this.state.room).push().key;
 
     if(!message.text) return console.log("Not sending empty message");
-    if(message.text.length > this.state.maxLength) 
+    if(message.text.length > this.state.maxLength)
       return Alert.alert("Too long", "Max length is "+this.state.maxLength+" characters", [{text: "ok"}]);
 
     this.props.db.ref("chats/"+this.state.room+"/"+message._id).set(message)
@@ -65,12 +66,12 @@ export default class Chat extends Component {
           style={styles.chat}
           messages={this.state.messages}
           onSend={this.onSend.bind(this)}
-          user={{ 
+          user={{
             _id: this.props.user.uid,
             name: this.state.nick,
-            avatar: this.state.avatar, 
+            avatar: this.state.avatar,
           }}
-          isAnimated={true} 
+          isAnimated={true}
           showNameInsteadOfTime={true}
           forceLeft={false} />
       </View>
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   },
 
   chat: {
-    
+
   }
 
 });

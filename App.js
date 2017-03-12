@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { AppRegistry, StyleSheet, View, StatusBar, Alert, ActivityIndicator, Text } from 'react-native';
 
-import MyNavigator from "./app/components/Navigator/MyNavigator";
-import ScoreHolder from "./app/components/Holders/ScoreHolder";
-import NickHolder from "./app/components/Holders/NickHolder";
-import firebase from "./app/modules/Firebase";
+import MyNavigator from "./app/components/Navigator/MyNavigator"
+import ScoreHolder from "./app/components/Holders/ScoreHolder"
+import NickHolder from "./app/components/Holders/NickHolder"
+import firebase from "./app/modules/Firebase"
 
+import codePush from "react-native-code-push"
 import DeviceInfo from "react-native-device-info"
 
-export default class Rather extends Component {
+class Rathery extends Component {
   constructor(props){
     super(props);
 
@@ -86,6 +87,8 @@ export default class Rather extends Component {
   }
 
 }
+
+export default codePush(Rathery)
 
 const styles = StyleSheet.create({
   container: {
