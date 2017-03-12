@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, TouchableHighlight, Image, ActivityIndicator } 
 export default class Game extends Component {
   render() {
     return (
-      <View style={styles.container}> 
+      <View style={styles.container}>
         <TouchableHighlight style={[styles.touchable, {backgroundColor: this.props.backgroundColor}]}
             onPress={this.props.onPress} underlayColor={this.props.underlayColor || "transparent"}>
           <View style={styles.innerContainer}>
@@ -13,12 +13,12 @@ export default class Game extends Component {
                   ellipsizeMode={"tail"}
                   numberOfLines={6} >
                 {this.getOptionText()}
-              </Text> 
+              </Text>
             }
             {this.props.showSpinner &&
               <ActivityIndicator style={styles.spinner} color={"white"} size={"small"} />
             }
-            
+
             {((this.props.voted || !this.props.active) && !this.props.inactive) &&
               <View style={styles.infoTextContainer}>
                 <Text style={[styles.text, styles.infoText, styles.votesText, {color: this.props.textColor || "white"}]}>{this.props.votes || 0}</Text>
@@ -36,7 +36,7 @@ export default class Game extends Component {
 
   getOptionText(){
     return (this.props.voted || !this.props.active)
-      ? this.getShortOption() 
+      ? this.getShortOption()
       : this.props.option;
   }
 
@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
   touchable: {
     flex: 1,
     justifyContent: "center",
-    borderRadius: 3
+    borderRadius: 3,
+    paddingHorizontal: 3,
   },
 
   innerContainer: {

@@ -19,10 +19,10 @@ export default class LadderList extends Component {
 
           <Text style={[styles.text, styles.title]}>{this.props.data.title}</Text>
           {!this.props.data.loading &&
-            <Text style={[styles.text, styles.cost]}>${this.props.data.cost}</Text>
+            <Text style={[styles.text, styles.cost]}>☆{this.props.data.cost}</Text>
           }
 
-          {this.props.isCurrentAvatar && 
+          {this.props.isCurrentAvatar &&
             <Image style={styles.checkmark} source={require("../../images/checkmark.png")} />
           }
 
@@ -34,7 +34,7 @@ export default class LadderList extends Component {
   onPress(){
     if(!this.props.data.active) return console.log("Row is inactive");
 
-    this.props.onPress 
+    this.props.onPress
       ? this.props.onPress(this.props.data)
       : console.log("No onPress prop for GridItem.js");
   }

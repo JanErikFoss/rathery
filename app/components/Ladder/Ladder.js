@@ -34,57 +34,66 @@ export default class Ladder extends Component {
   }
 
   reload(){
-    this.getNewPost({index: this.state.index, ignoreChecks: true});
+    this.getNewPost({ index: this.state.index, ignoreChecks: true });
   }
 
-  getNewPost({index, ignoreChecks}){
+  getNewPost({ index, ignoreChecks }){
     if(!ignoreChecks && this.state.loading)
       return console.log("Still loading...");
-    if(index <= 0) 
-      return console.log("Invalid index: " + index);
+    if(index <= 0)
+      return console.log("Invalid index: " + index)
 
-    console.log("Loading post with index " + index);
+    this.postDeletedListener && this.postDeletedListener.off()
 
-    oldPost = this.state.post;
-    this.defaultPost.key = oldPost.key;
-    this.setState({post: this.defaultPost, loading: true});
+    console.log("Loading post with index " + index)
 
-    const checkSameAsOld = post=> post.key === oldPost.key ? Promise.reject({message: "Same post returned"}) : post;
-    const updateState = post=> this.setState({post, index: Math.min(this.maxLength, index)});
-    const log = ()=> console.log("New post loaded and displayed");
-    const errorHandler = err=> this.errorHandler({err, index, oldPost});
-    const turnOffLoading = ()=> this.setState({loading: false});
+    oldPost = this.state.post
+    this.defaultPost.key = oldPost.key
+    this.setState({ post: this.defaultPost, loading: true })
 
     this.loadPost(index)
-    .then( checkSameAsOld )
-    .then( updateState )
-    .then( log )
-    .catch(errorHandler )
-    .then( turnOffLoading )
-    .catch(err=> console.log("Failed to load post: ", err) );
+    .then(post => post.key !== oldPost.key ? post : Promise.reject({ message: "Same post returned" }))
+    .then(post => this.setState({ post, index: Math.min(this.maxLength, index) }))
+    .then(() => console.log("New post loaded and displayed"))
+    .then(() => this.startListeningForPostDeleted(this.state.post))
+    .catch(err => this.errorHandler({ err, index, oldPost }))
+    .then(() => this.setState({ loading: false }))
+    .catch(err => console.log("Failed to load post: ", err))
   }
 
   loadPost(index){
-    const roomRef = this.props.db.ref("ladders/"+this.state.room);
-    const orderBy = this.state.showNew ? "createdAt" : "votes";
-    const query = roomRef.orderByChild(orderBy).limitToLast(index);
+    const roomRef = this.props.db.ref("ladders/"+this.state.room)
+    const orderBy = this.state.showNew ? "createdAt" : "votes"
+    const query = roomRef.orderByChild(orderBy).limitToLast(index)
 
-    const saveLength = ss=> {this.maxLength = ss.numChildren(); return ss;};
-    const checkLength = ss=> ss.numChildren() > 0 ? ss : Promise.reject({message: "No posts returned"});
+    const saveLength = ss => { this.maxLength = ss.numChildren(); return ss }
+    const checkLength = ss => ss.numChildren() > 0 ? ss : Promise.reject({ message: "No posts returned" })
 
-    const getFirst = ss=>{
+    const getFirst = ss => {
       let post;
-      ss.forEach(p=>{
-        post = {key: p.key, ...p.val()}; 
-        return true;        // return true to break forEach
-      });
-      return post;
-    };  
+      ss.forEach(p => {
+        post = { key: p.key, ...p.val() }
+        return true        // return true to break forEach
+      })
+      return post
+    }
 
     return query.once("value")
       .then( saveLength )
       .then( checkLength )
-      .then( getFirst );
+      .then( getFirst )
+  }
+
+  startListeningForPostDeleted(post){
+    if(!post.key) return console.log("Could not start listening for post deletion, key was null")
+    this.postDeletedListener = this.props.db.ref("ladders/"+this.state.room+"/"+post.key)
+    this.postDeletedListener.on("value", ss => {
+      if(ss.exists()){
+        return console.log("Post changed but still exists")
+      }
+      console.log("ss.exists() was false, reloading")
+      this.reload()
+    })
   }
 
   errorHandler({err, index, oldPost}){

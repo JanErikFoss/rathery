@@ -8,18 +8,18 @@ export default class PostView extends Component {
           onPress={this.onPress.bind(this)} >
         <View style={styles.buttonInnerContainer}>
 
-          <Image style={styles.image} 
-            source={ this.props.voted 
+          <Image style={styles.image}
+            source={ this.props.voted
                         ? require("../../images/upvoted.png")
                         : require("../../images/upvote_white.png") } />
           <Text style={[styles.text, styles.votesText]}>
             {this.props.votes || 0}
           </Text>
 
-          {!this.props.new && 
+          {!this.props.new &&
             <Text style={[styles.text, styles.infoText, styles.index]}>
-              #{this.props.index}
-            </Text> 
+              Ladder position: {this.props.index}.
+            </Text>
           }
           {this.props.new  &&
           <Text style={[styles.text, styles.infoText, styles.postedBy]}>
@@ -37,7 +37,7 @@ export default class PostView extends Component {
   onPress(){
     if(this.props.voted) return console.log("Already voted");
 
-    this.props.onPress 
+    this.props.onPress
       ? this.props.onPress()
       : console.log("No onPress prop at LadderListItem.js");
   }
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     justifyContent: "center",
-  }, 
+  },
   buttonInnerContainer: {
     flex: 1,
     alignItems: "center"

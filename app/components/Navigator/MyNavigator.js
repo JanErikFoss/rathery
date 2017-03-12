@@ -20,9 +20,9 @@ export default class MyNavigator extends Component {
     this.routes = [
       {
         index: 0,
-        title: ()=> this.getTitle("$" + (this.props.score() || 0)), 
+        title: ()=> this.getTitle("☆" + (this.props.score() || 0)),
         render: (route, nav)=> this.renderScene((
-          <Shop ref={r=> this._shop = this._shop || r} {...this.getProps({route, nav})} /> 
+          <Shop ref={r=> this._shop = this._shop || r} {...this.getProps({route, nav})} />
         )),
         left: (route, nav, index, navState)=> this.getButton({
           image: require("../../images/back.png"),
@@ -37,16 +37,16 @@ export default class MyNavigator extends Component {
 
       {
         index: 1,
-        title: ()=> this.getTitle("$" + (this.props.score() || 0)), 
+        title: ()=> this.getTitle("☆" + (this.props.score() || 0)),
         render: (route, nav)=> this.renderScene((
-          <Lobby ref={r=> this._lobby = this._lobby || r} {...this.getProps({route, nav})} /> 
+          <Lobby ref={r=> this._lobby = this._lobby || r} {...this.getProps({route, nav})} />
         )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../../images/cash.png"), 
+          image: require("../../images/cash.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../../images/ladder.png"), 
+          image: require("../../images/ladder.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._lobby,
@@ -54,17 +54,17 @@ export default class MyNavigator extends Component {
 
       {
         index: 2,
-        title: ()=> this.getTitle(this._ladder ? this._ladder.getTitle() : "Submissions"),  
+        title: ()=> this.getTitle(this._ladder ? this._ladder.getTitle() : "Submissions"),
         render: (route, nav)=> this.renderScene((
           <Ladder ref={r=> this._ladder = this._ladder || r} {...this.getProps({route, nav})}
-            titleChanged={this.forceUpdate.bind(this)} /> 
+            titleChanged={this.forceUpdate.bind(this)} />
         )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../../images/back.png"), 
+          image: require("../../images/back.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../../images/write.png"), 
+          image: require("../../images/write.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index+1 ])
         }),
         getRef: ()=> this._ladder,
@@ -73,16 +73,16 @@ export default class MyNavigator extends Component {
 
       {
         index: 3,
-        title: ()=> this.getTitle("Write"), 
+        title: ()=> this.getTitle("Write"),
         render: (route, nav)=> this.renderScene((
-          <WritePage ref={r=> this._writePage = this._writePage || r} {...this.getProps({route, nav})} /> 
+          <WritePage ref={r=> this._writePage = this._writePage || r} {...this.getProps({route, nav})} />
         )),
         left: (route, nav, index, navState)=> this.getButton({
-          image: require("../../images/back.png"), 
+          image: require("../../images/back.png"),
           onPress: ()=> nav.jumpTo(this.routes[ index-1 ])
         }),
         right: (route, nav, index, navState)=> this.getButton({
-          image: require("../../images/checkmark.png"), 
+          image: require("../../images/checkmark.png"),
           onPress: ()=> this._writePage && this._writePage.onFinishPressed(onWritePageFinishedCallback)
         }),
         getRef: ()=> this._writePage,

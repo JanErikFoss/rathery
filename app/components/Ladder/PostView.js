@@ -44,7 +44,7 @@ export default class PostView extends Component {
     this.setState({loadingVoted: true});
 
     const setVoted = voted => !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({voted, loadingVoted: false})
-    const voteRef = this.props.db.ref("laddervoters/"+this.props.room+"/"+post.key+"/"+this.props.user.uid)
+    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+post.key+"/"+this.props.user.uid)
     voteRef.once("value")
     .then( ss => setVoted(ss.exists()) )
     .catch(err => console.log("Failed to load vote: ", err))
@@ -55,7 +55,7 @@ export default class PostView extends Component {
     this.setState({loadingVotes: true});
 
     const setVotes = votes=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({votes, loadingVotes: false})
-    const ref = this.props.db.ref("laddervotes/"+this.props.room+"/"+post.key)
+    const ref = this.props.db.ref("ladders/"+this.props.room+"/"+post.key+"/votes")
     ref.on("value",
       ss => setVotes(ss.val()),
       err => console.log("Failed to listen for votes value: ", err))
@@ -118,7 +118,7 @@ export default class PostView extends Component {
       return console.log("this.props.post is invalid")
     this.setState({ voted: true })
 
-    const voteRef = this.props.db.ref("laddervoters/"+this.props.room+"/"+this.props.post.key+"/"+this.props.user.uid)
+    const voteRef = this.props.db.ref("laddervotes/"+this.props.room+"/"+this.props.post.key+"/"+this.props.user.uid)
     voteRef.set( this.props.firebase.database.ServerValue.TIMESTAMP )
     .catch(err => {
       console.log("Failed to vote: ", err)
