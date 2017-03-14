@@ -46,7 +46,6 @@ export default class GiftedAvatar extends React.Component {
   }
 
   getImage(ava){ //Avatar
-    console.log("Getting image with ava: " + ava);
     switch(ava){
       case "hat1": return require("../../images/shop/hat1.png");
       case "hat2": return require("../../images/shop/hat2.png");

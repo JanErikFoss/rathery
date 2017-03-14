@@ -11,6 +11,11 @@ import Day from './Day';
 import { isSameUser, isSameDay, warnDeprecated } from './utils';
 
 export default class Message extends React.Component {
+  constructor(props){
+    super(props)
+
+    this.onReport = this.onReport.bind(this)
+  }
 
   renderDay() {
     if (this.props.currentMessage.createdAt) {
@@ -28,6 +33,10 @@ export default class Message extends React.Component {
     return null;
   }
 
+  onReport(){
+    this.props.onReport && this.props.onReport(this.props.currentMessage)
+  }
+
   renderBubble() {
     const {containerStyle, ...bubbleProps} = this.props;
     if (this.props.renderBubble) {
@@ -38,7 +47,7 @@ export default class Message extends React.Component {
         isSameDay: warnDeprecated(isSameDay)
       });
     }
-    return <Bubble {...bubbleProps}/>;
+    return <Bubble {...bubbleProps} onReport={this.onReport} />;
   }
 
   renderAvatar() {

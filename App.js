@@ -26,13 +26,14 @@ class Rathery extends Component {
 
   componentWillMount(){
     let user;
-    this.authorizeUser().then(u=> user = u)
+    this.authorizeUser()
+    .then(u => (user = u))
     .catch(err=>{
       console.log("Failed to sign in: ", err);
       Alert.alert("Error: "+err.code, err.message);
       Promise.reject("Failed to sign in, not setting state");
     })
-    .then(() => this.setState({user: user}) )
+    .then(() => this.setState({ user }) )
     .then(() => console.log("User is signed in") )
     .catch(err=> console.log("Failed to set state after authorizing: ", err) )
   }
@@ -47,15 +48,6 @@ class Rathery extends Component {
     return new Promise( (resolve, reject) => {
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
       .catch(err=> err.code === "auth/email-already-in-use" ? this.signIn() : Promise.reject(err) )
-      .then( resolve )
-      .catch( reject )
-    });
-  }
-
-  createUser(){
-    return new Promise( (resolve, reject) => {
-      firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-      .then(()=> this.showUsernamePrompt() )
       .then( resolve )
       .catch( reject )
     });
@@ -88,7 +80,8 @@ class Rathery extends Component {
 
 }
 
-export default codePush(Rathery)
+//export default codePush(Rathery)
+export default Rathery
 
 const styles = StyleSheet.create({
   container: {

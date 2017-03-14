@@ -18,6 +18,9 @@ export default class Chat extends Component {
       room: props.room || "main",
       initialMessageCount: props.initialMessageCount || 10
     };
+
+    this.onSend = this.onSend.bind(this)
+    this.onReport = this.onReport.bind(this)
   }
 
   componentWillMount() {
@@ -54,9 +57,22 @@ export default class Chat extends Component {
     if(message.text.length > this.state.maxLength)
       return Alert.alert("Too long", "Max length is "+this.state.maxLength+" characters", [{text: "ok"}]);
 
+    message.reported = 0
+
     this.props.db.ref("chats/"+this.state.room+"/"+message._id).set(message)
     .then(()=> console.log("Successfully sent message") )
     .catch(err=> console.log("Failed to send message: ", err) );
+  }
+
+  onReport(message){
+    this.props.db.ref("chatreports/"+this.state.room+"/"+message._id+"/"+this.props.user.uid)
+    .set( this.props.firebase.database.ServerValue.TIMESTAMP )
+    .then(() => console.log("Message reported as inappropriate"))
+    .then(() => Alert.alert("Success", "We have heard you and will review the message"))
+    .catch(err => {
+      console.log("Failed to report message: ", err)
+      Alert.alert("Failed to report message", "If you have reported this message before, this message is normal. If not, please try again.")
+    })
   }
 
   render() {
@@ -65,7 +81,8 @@ export default class Chat extends Component {
         <GiftedChat
           style={styles.chat}
           messages={this.state.messages}
-          onSend={this.onSend.bind(this)}
+          onSend={this.onSend}
+          onReport={this.onReport}
           user={{
             _id: this.props.user.uid,
             name: this.state.nick,

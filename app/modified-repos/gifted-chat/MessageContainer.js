@@ -109,8 +109,8 @@ export default class MessageContainer extends React.Component {
       message.user = {};
     }
 
-    const position = this.props.forceLeft 
-                      ? "left" 
+    const position = this.props.forceLeft
+                      ? "left"
                       : (message.user._id === this.props.user._id ? 'right' : 'left');
 
     const messageProps = {
@@ -119,7 +119,7 @@ export default class MessageContainer extends React.Component {
       currentMessage: message,
       previousMessage: message.previousMessage,
       nextMessage: message.nextMessage,
-      position: position
+      position: position,
     };
 
     if (this.props.renderMessage) {

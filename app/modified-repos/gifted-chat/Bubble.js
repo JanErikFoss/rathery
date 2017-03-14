@@ -18,6 +18,10 @@ export default class Bubble extends React.Component {
     this.onLongPress = this.onLongPress.bind(this);
   }
 
+  setOnReport(onReport){
+    this.onReport = onReport
+  }
+
   handleBubbleToNext() {
     if (isSameUser(this.props.currentMessage, this.props.nextMessage) && isSameDay(this.props.currentMessage, this.props.nextMessage)) {
       return StyleSheet.flatten([styles[this.props.position].containerToNext, this.props.containerToNextStyle[this.props.position]]);
@@ -81,8 +85,9 @@ export default class Bubble extends React.Component {
     } else {
       if (this.props.currentMessage.text) {
         const options = [
-          'Copy Text',
-          'Cancel',
+          "Report as inappropriate",
+          "Copy Text",
+          "Cancel",
         ];
         const cancelButtonIndex = options.length - 1;
         this.context.actionSheet().showActionSheetWithOptions({
@@ -92,6 +97,9 @@ export default class Bubble extends React.Component {
         (buttonIndex) => {
           switch (buttonIndex) {
             case 0:
+              this.props.onReport && this.props.onReport()
+              break;
+            case 1:
               Clipboard.setString(this.props.currentMessage.text);
               break;
           }
