@@ -39,22 +39,21 @@ class Rathery extends Component {
   }
 
   authorizeUser(){
-    this.email = DeviceInfo.getUniqueID() + "@rathery.no";
-    this.password = "RatheryDefaultPassword1996";
+    this.email = DeviceInfo.getUniqueID() + "@rathery.no"
+    this.password = "RatheryDefaultPassword1996"
 
-    console.log("Email: " + this.email);
-    console.log("Password: " + this.password);
+    console.log("Email: " + this.email)
+    console.log("Password: " + this.password)
+
+    let user = null
+    const signIn = () => firebase.auth().signInWithEmailAndPassword(this.email, this.password)
 
     return new Promise( (resolve, reject) => {
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-      .catch(err=> err.code === "auth/email-already-in-use" ? this.signIn() : Promise.reject(err) )
-      .then( resolve )
+      .catch(err => err.code === "auth/email-already-in-use" ? signIn() : Promise.reject(err))
+      .then(user => resolve(user) )
       .catch( reject )
     });
-  }
-
-  signIn(){
-    return firebase.auth().signInWithEmailAndPassword(this.email, this.password);
   }
 
   render() {

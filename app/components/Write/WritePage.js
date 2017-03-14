@@ -45,6 +45,16 @@ export default class PostView extends Component {
           </View>
         </TouchableWithoutFeedback>
 
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+          <Text style={{ color: "white" }}>
+            Support mail: SolaFossTek@gmail.com
+          </Text>
+        </View>
+
       </KeyboardAvoidingView>
     );
   }

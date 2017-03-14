@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, Alert, TouchableHighlight, Image } from 'react-native';
+import { StyleSheet, View, Dimensions, Alert, TouchableHighlight, Image, Text } from 'react-native';
 
 import PostView from "./PostView"
 
@@ -49,15 +49,15 @@ export default class Ladder extends Component {
 
     oldPost = this.state.post
     this.defaultPost.key = oldPost.key
-    this.setState({ post: this.defaultPost, loading: true })
+    !this.unmounted && this.setState({ post: this.defaultPost, loading: true })
 
     this.loadPost(index)
     .then(post => post.key !== oldPost.key ? post : Promise.reject({ message: "Same post returned" }))
-    .then(post => this.setState({ post, index: Math.min(this.maxLength, index) }))
+    .then(post => !this.unmounted && this.setState({ post, index: Math.min(this.maxLength, index) }))
     .then(() => console.log("New post loaded and displayed"))
     .then(() => this.startListeningForPostDeleted(this.state.post))
     .catch(err => this.errorHandler({ err, index, oldPost }))
-    .then(() => this.setState({ loading: false }))
+    .then(() => !this.unmounted && this.setState({ loading: false }))
     .catch(err => console.log("Failed to load post: ", err))
   }
 
@@ -98,15 +98,16 @@ export default class Ladder extends Component {
 
   errorHandler({err, index, oldPost}){
     if(err.message === "Same post returned")
-      return this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
+      return !this.unmounted && this.setState({post: oldPost, index: Math.min(this.maxLength, Math.min(this.state.index, index))});
 
     if(err.message === "No posts returned")
-      return this.setState({index: 1, voted: false});
+      return !this.unmounted && this.setState({index: 1, voted: false});
 
     console.log("Failed to load post at index " + index + ": " + err.message);
   }
 
   componentWillUnmount(){
+    this.unmounted = true
     this.removeChildAddedListener && this.removeChildAddedListener();
     this.removeChildAddedListener = null;
   }
@@ -171,6 +172,6 @@ const styles = StyleSheet.create({
   image: {
     height: imageSize,
     width: imageSize,
-  }
+  },
 
 });

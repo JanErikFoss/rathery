@@ -25,12 +25,24 @@ export default class Game extends Component {
   componentWillMount(){
     const onErr = err => console.log("Listener error in Game.js: ", err)
     this.roomRef = this.props.db.ref("rooms/"+this.state.room)
-    this.roomRef.child("ops").on("value", ss => this.onOptionValue(ss.val()), onErr)
-    this.roomRef.child("op1votes").on("value", ss => this.setState({ op1votes: ss.val() }), onErr)
-    this.roomRef.child("op2votes").on("value", ss => this.setState({ op2votes: ss.val() }), onErr)
-    this.roomRef.child("timestamp").on("value", ss => this.setState({ timestamp: ss.val() }), onErr)
-    this.roomRef.child("active").on("value", ss => this._activeChanged(ss.val()), onErr)
-    this.roomRef.child("updateInterval").on("value", ss => this.setState({ updateInterval: ss.val() }), onErr)
+
+    this.opsRef = this.roomRef.child("ops")
+    this.opsRef.on("value", ss => this.onOptionValue(ss.val()), onErr)
+
+    this.op1votesRef = this.roomRef.child("op1votes")
+    this.op1votesRef.on("value", ss => this.setState({ op1votes: ss.val() }), onErr)
+
+    this.op2votesRef = this.roomRef.child("op2votes")
+    this.op2votesRef.on("value", ss => this.setState({ op2votes: ss.val() }), onErr)
+
+    this.tsRef = this.roomRef.child("timestamp")
+    this.tsRef.on("value", ss => this.setState({ timestamp: ss.val() }), onErr)
+
+    this.activeRef = this.roomRef.child("active")
+    this.activeRef.on("value", ss => this.setState({ active: ss.val() }), onErr)
+
+    this.intervalRef = this.roomRef.child("updateInterval")
+    this.intervalRef.on("value", ss => this.setState({ updateInterval: ss.val() }), onErr)
 
     this.voteRef = this.props.db.ref("votes/"+this.state.room+"/"+this.props.user.uid)
     this.voteRef.on("value", ss => {
@@ -39,14 +51,15 @@ export default class Game extends Component {
     })
   }
 
-  _activeChanged(active){
-    this.setState({active})
-  }
-
   componentWillUnmount(){
-    //Both of these are untested, so they might not even work
-    this.roomRef && this.roomRef.off()
-    this.voteRef && this.voteRef.off()
+    this.roomRef.off()
+    this.voteRef.off()
+    this.opsRef.off()
+    this.op1votesRef.off()
+    this.op2votesRef.off()
+    this.tsRef.off()
+    this.activeRef.off()
+    this.intervalRef.off()
   }
 
   onOptionValue(val){

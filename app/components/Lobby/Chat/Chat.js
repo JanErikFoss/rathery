@@ -19,31 +19,57 @@ export default class Chat extends Component {
       initialMessageCount: props.initialMessageCount || 10
     };
 
+    this.blockedUsers = []
+
     this.onSend = this.onSend.bind(this)
     this.onReport = this.onReport.bind(this)
+    this.onMessage = this.onMessage.bind(this)
+    this.onBlock = this.onBlock.bind(this)
+    this.addBlocked = this.addBlocked.bind(this)
+    this.listenForMessages = this.listenForMessages.bind(this)
   }
 
   componentWillMount() {
-    this.chatRef = this.props.db.ref("chats/"+this.state.room);
-    this.chatRef.limitToLast(this.state.initialMessageCount).on("child_added", ss=>{
-      this.setState(prevState => {
-        return { messages: GiftedChat.append(prevState.messages, ss.val()) };
-      });
-    });
+    const userRef = this.props.db.ref("users/"+this.props.user.uid)
+    userRef.child("blocked").once("value")
+    .then(ss => ss.forEach(this.addBlocked))
+    .then( this.listenForMessages )
+    .catch(err => {
+      console.log("Failed to get block list or to listen for messages: ", err)
+      Alert.alert("Failed to get messages", "Something went wrong while retrieving the chat messages")
+    })
 
-    const userRef = this.props.db.ref("users/"+this.props.user.uid);
-
-    this.nickRef = userRef.child("nickname");
-    this.nickRef.on("value", ss=> this.setState({nick: ss.val()}) )
+    this.nickRef = userRef.child("nickname")
+    this.nickRef.on("value", ss=> this.setState({ nick: ss.val() }))
 
     this.avaRef = userRef.child("avatar");
-    this.avaRef.on("value", ss=> this.setState({avatar: ss.val()}) )
+    this.avaRef.on("value", ss=> this.setState({ avatar: ss.val() }))
+  }
+
+  addBlocked(ss){
+    this.blockedUsers.push(ss.key)
+  }
+
+  listenForMessages(){
+    const onErr = err => console.log("Failed to listen for messages in chat: ", err)
+    this.chatRef = this.props.db.ref("chats/"+this.state.room);
+    this.chatRef.limitToLast(this.state.initialMessageCount)
+    .on("child_added", this.onMessage, onErr)
   }
 
   componentWillUnmount(){
-    this.chatRef && this.chatRef.off();
-    this.nickRef && this.nickRef.off();
-    this.avaRef && this.avaRef.off();
+    this.chatRef && this.chatRef.off()
+    this.nickRef && this.nickRef.off()
+    this.avaRef && this.avaRef.off()
+  }
+
+  onMessage(ss){
+    const message = ss.val()
+    if(this.blockedUsers.includes(message.user._id))
+      return console.log("Message from blocked user was hidden")
+    this.setState(prevState => {
+      return { messages: GiftedChat.append(prevState.messages, message) }
+    })
   }
 
   onSend(messages = []) {
@@ -56,8 +82,6 @@ export default class Chat extends Component {
     if(!message.text) return console.log("Not sending empty message");
     if(message.text.length > this.state.maxLength)
       return Alert.alert("Too long", "Max length is "+this.state.maxLength+" characters", [{text: "ok"}]);
-
-    message.reported = 0
 
     this.props.db.ref("chats/"+this.state.room+"/"+message._id).set(message)
     .then(()=> console.log("Successfully sent message") )
@@ -75,6 +99,19 @@ export default class Chat extends Component {
     })
   }
 
+  onBlock(message){
+    const uid = message.user._id
+    if(uid === this.props.user.uid)
+      return console.log("You tried to block yourself")
+    console.log("Blocking user: ", uid)
+
+    this.props.db.ref("users/"+this.props.user.uid+"/blocked/"+uid)
+    .set(true)
+    .then(() => console.log("Blocked user"))
+    .then(() => Alert.alert("User has been blocked", "Close and reopen Rathery to hide the user's messages"))
+    .catch(err => console.log("Failed to block user: ", err))
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -83,6 +120,7 @@ export default class Chat extends Component {
           messages={this.state.messages}
           onSend={this.onSend}
           onReport={this.onReport}
+          onBlock={this.onBlock}
           user={{
             _id: this.props.user.uid,
             name: this.state.nick,

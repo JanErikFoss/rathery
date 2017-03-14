@@ -85,6 +85,7 @@ export default class Bubble extends React.Component {
     } else {
       if (this.props.currentMessage.text) {
         const options = [
+          "Block user",
           "Report as inappropriate",
           "Copy Text",
           "Cancel",
@@ -97,9 +98,12 @@ export default class Bubble extends React.Component {
         (buttonIndex) => {
           switch (buttonIndex) {
             case 0:
-              this.props.onReport && this.props.onReport()
+              this.props.onBlock && this.props.onBlock()
               break;
             case 1:
+              this.props.onReport && this.props.onReport()
+              break;
+            case 2:
               Clipboard.setString(this.props.currentMessage.text);
               break;
           }
