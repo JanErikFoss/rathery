@@ -87,6 +87,7 @@ export default class Bubble extends React.Component {
         const options = [
           "Block user",
           "Report as inappropriate",
+          "Hide message",
           "Copy Text",
           "Cancel",
         ];
@@ -104,6 +105,9 @@ export default class Bubble extends React.Component {
               this.props.onReport && this.props.onReport()
               break;
             case 2:
+              this.props.onRemove && this.props.onRemove()
+              break;
+            case 3:
               Clipboard.setString(this.props.currentMessage.text);
               break;
           }

@@ -16,6 +16,7 @@ export default class Message extends React.Component {
 
     this.onReport = this.onReport.bind(this)
     this.onBlock = this.onBlock.bind(this)
+    this.onRemove = this.onRemove.bind(this)
   }
 
   renderDay() {
@@ -40,6 +41,9 @@ export default class Message extends React.Component {
   onBlock(){
     this.props.onBlock && this.props.onBlock(this.props.currentMessage)
   }
+  onRemove(){
+    this.props.onRemove && this.props.onRemove(this.props.currentMessage)
+  }
 
   renderBubble() {
     const {containerStyle, ...bubbleProps} = this.props;
@@ -51,7 +55,13 @@ export default class Message extends React.Component {
         isSameDay: warnDeprecated(isSameDay)
       });
     }
-    return <Bubble {...bubbleProps} onReport={this.onReport} onBlock={this.onBlock} />;
+    return (
+      <Bubble {...bubbleProps}
+        onReport={this.onReport}
+        onBlock={this.onBlock}
+        onRemove={this.onRemove}
+      />
+    );
   }
 
   renderAvatar() {

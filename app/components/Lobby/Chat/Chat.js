@@ -27,6 +27,7 @@ export default class Chat extends Component {
     this.onBlock = this.onBlock.bind(this)
     this.addBlocked = this.addBlocked.bind(this)
     this.listenForMessages = this.listenForMessages.bind(this)
+    this.onRemove = this.onRemove.bind(this)
   }
 
   componentWillMount() {
@@ -107,9 +108,14 @@ export default class Chat extends Component {
 
     this.props.db.ref("users/"+this.props.user.uid+"/blocked/"+uid)
     .set(true)
-    .then(() => console.log("Blocked user"))
-    .then(() => Alert.alert("User has been blocked", "Close and reopen Rathery to hide the user's messages"))
+    .then(() => this.state.messages.filter(mes => mes.user._id !== message.user._id))
+    .then(messages => this.setState({ messages }))
     .catch(err => console.log("Failed to block user: ", err))
+  }
+
+  onRemove(message) {
+    const messages = this.state.messages.filter(mes => mes._id !== message._id)
+    this.setState({ messages })
   }
 
   render() {
@@ -121,6 +127,7 @@ export default class Chat extends Component {
           onSend={this.onSend}
           onReport={this.onReport}
           onBlock={this.onBlock}
+          onRemove={this.onRemove}
           user={{
             _id: this.props.user.uid,
             name: this.state.nick,
