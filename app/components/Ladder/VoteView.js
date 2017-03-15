@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TouchableHighlight, Image, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, TouchableHighlight, Image, Text, Dimensions, Alert } from 'react-native';
 
 export default class PostView extends Component {
+  constructor(props){
+    super(props)
+
+    this.onPress = this.onPress.bind(this)
+    this.report = this.report.bind(this)
+  }
+
   render() {
     return (
       <TouchableHighlight style={styles.highlight} underlayColor={"transparent"}
-          onPress={this.onPress.bind(this)} >
+          onPress={this.onPress} >
         <View style={styles.buttonInnerContainer}>
 
           <Image style={styles.image}
@@ -29,9 +36,31 @@ export default class PostView extends Component {
             {this.getTimeAgo()}
           </Text>
 
+          <TouchableHighlight style={styles.reportHighlight} underlayColor={"transparent"}
+            onPress={this.report} >
+
+              <Text style={[styles.text, styles.reportText]}>Report submission</Text>
+
+          </TouchableHighlight>
+
         </View>
       </TouchableHighlight>
     );
+  }
+
+  report(){
+    Alert.alert("Report submission", "Are you sure you want to report this submission for breaking the rules?", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+      {
+        text: "I'm sure",
+        onPress: () => this.props.onReport(),
+        style: "default",
+      }
+    ])
   }
 
   onPress(){
@@ -102,5 +131,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
   },
+
+  reportHighlight: {
+  },
+
+  reportText: {
+    padding: 4,
+    color: "silver",
+  }
 
 });

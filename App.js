@@ -79,8 +79,8 @@ class Rathery extends Component {
 
 }
 
-//export default codePush(Rathery)
-export default Rathery
+export default codePush(Rathery)
+//export default Rathery
 
 const styles = StyleSheet.create({
   container: {

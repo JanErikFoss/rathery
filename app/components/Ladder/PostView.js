@@ -18,6 +18,8 @@ export default class PostView extends Component {
 
     this.state = this.initialState;
 
+    this.onReport = this.onReport.bind(this)
+    this.onVote = this.onVote.bind(this)
   }
 
   componentDidMount(){
@@ -54,7 +56,7 @@ export default class PostView extends Component {
     this.removeListener && this.removeListener();
     this.setState({loadingVotes: true});
 
-    const setVotes = votes=> !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({votes, loadingVotes: false})
+    const setVotes = votes => !this.unmounted && this.props.post && this.props.post.key === post.key && this.setState({votes, loadingVotes: false})
     const ref = this.props.db.ref("ladders/"+this.props.room+"/"+post.key+"/votes")
     ref.on("value",
       ss => setVotes(ss.val()),
@@ -105,12 +107,26 @@ export default class PostView extends Component {
             voted={this.state.loadingVoted ? false : this.state.voted}
             votes={this.state.loadingVotes ? "..." : this.state.votes || 0}
             timestamp={this.props.post.createdAt}
-            onPress={this.onVote.bind(this)} />
+            onPress={this.onVote}
+            onReport={this.onReport} />
 
         </Arrows>
 
       </View>
     );
+  }
+
+  onReport(){
+    if(!this.props.post || this.props.post.invalid)
+      return console.log("this.props.post is invalid")
+
+    this.props.db.ref("ladderreports/"+this.props.room+"/"+this.props.post+"/"+this.props.user.uid)
+    .set( this.props.firebase.database.ServerValue.TIMESTAMP )
+    .then(() => Alert.alert("Success", "We have received you report and will review it asap"))
+    .catch(err => {
+      console.log("Failed to report: ", err)
+      Alert.alert("Failed to report", "If you have reported this submission before, this is normal. If not, please try again")
+    })
   }
 
   onVote(){
